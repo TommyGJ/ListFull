@@ -2,20 +2,32 @@ require 'rails_helper'
 
 RSpec.describe User, type: :model do
   it { should have_many(:lists) }
-  it "is invalid without a password " do
-    user = User.create(email: "example@example.com", name: "John Doe", password: nil)
-    expect(user).to be_invalid
-  end
 
-  it "is invalid without an email" do
-    user = User.create(email: nil , name: "John Doe", password: "password")
-    expect(user).to be_invalid
-  end
+  context "new user" do
+    let(:user) { create(:user) }
 
-  it "is invalid without a name" do
-    user = User.create(email: "example@example.com" , name: nil , password: "password")
-    expect(user).to be_invalid
-  end
+    it "is invalid without a password " do
+      expect{create(:user, password: '' )}.to raise_error(ActiveRecord::RecordInvalid) 
+    end
 
-  
+    it "is invalid without a password confirmation" do
+      expect{create(:user, password: "password", password_confirmation: nil)}.to raise_error(ActiveRecord::RecordInvalid)
+    end
+
+    it "is invalid without an email" do
+      expect{create(:user, email: nil)}.to raise_error(ActiveRecord::RecordInvalid) 
+    end
+
+    it "is invalid without a name" do
+      user.first_name = nil
+      user.last_name = nil
+      expect(user).to be_invalid
+    end
+
+    it "is valid with all fields filled out" do
+      expect(user).to be_valid
+    end
+
+
+  end
 end

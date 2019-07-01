@@ -1,7 +1,7 @@
-class ListSerializer < ActiveModel::Serializer
-  attributes :id, :name, :created_at, :updated_at
+class ListSerializer
+  include FastJsonapi::ObjectSerializer
+  attributes :name 
 
-  belongs_to :user
   has_many :items
-  
+  belongs_to :user
 end

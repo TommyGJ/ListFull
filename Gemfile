@@ -47,16 +47,13 @@ end
 
 group :development, :test do
   gem 'rspec-rails', '~> 3.8'
-  gem 'factory_bot_rails'
 end
 
-gem 'fast_jsonapi'
 
 gem 'capybara'
 
-gem 'sorcery'
+gem 'devise'
 
-gem 'jwt'
 group :development do
   # Access an interactive console on exception pages or by calling 'console' anywhere in the code.
   gem 'web-console', '>= 3.3.0'
@@ -70,3 +67,4 @@ end
 # Windows does not include zoneinfo files, so bundle the tzinfo-data gem
 gem 'tzinfo-data', platforms: [:mingw, :mswin, :x64_mingw, :jruby]
 
+gem "doorkeeper", "~> 5.1"

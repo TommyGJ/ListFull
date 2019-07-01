@@ -34,33 +34,23 @@ export default class SignUpScreen extends React.Component {
 		return re.test(this.state.email);
 	}
 
-	_handleSignUp = () => {
-		if (this.state.password_confirmation !== this.state.password) {
-			this.setState({ err: true, errMessage: [...this.state.errMessage, [{id: "passwords", title: "don't match"}]]});
-		}	else if (!this._isValidEmail()) {
-			this.setState({ err: true, errMessage: [...this.state.errMessage, [{id: "email", title: "is not in correct form"}]]});
-		} else {
-			this._createAccount();
-		}
-	}
-
 	_createAccount = async () => {
 		try {
-			const response = await API.post('/api/v1/users', {
+			const response = await API.post('/api/v1/new_account', {
 				user: {
 					email: this.state.email,
 					password: this.state.password,
-					name: this.state.firstName + ' ' + this.state.lastName,
+					password_confirmation: this.state.password_confirmation,
+					first_name: this.state.firstName,
+					last_name: this.state.lastName
 				}
 			});
 			console.log(response.data);
-			if (response.data["errors"]) {
-				this.setState({err: true, errMessage: [...this.state.errMessage, response.data["errors"]]});
-			} else {
-				this.props.navigation.navigate('AuthLoading');
-			}
+			this.props.navigation.navigate('AuthLoading');
 		} catch (e) {
-			console.log(e);
+			console.log(e.response.data)
+			this.setState({err: true, errMessage: e.response.data["errors"]});
+
 		}
 	}
 
@@ -130,7 +120,7 @@ export default class SignUpScreen extends React.Component {
 					<Button
 						onPress={() => {
 							this.setState({ err: false, errMessage: [] }, () =>
-									this._handleSignUp()
+									this._createAccount()
 							);
 						}}
 						title="Create Account"

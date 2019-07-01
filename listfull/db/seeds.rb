@@ -5,21 +5,13 @@
 #
 #   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
 #   Character.create(name: 'Luke', movie: movies.first)
-#
 
-user1 = User.create(name: "John Doe", email: "example@example.com", password: "password", email_confirmed: true)
-user1.lists.create(name: "groceries", user: user1)
-user1.lists.create(name: "school supplies");
-user2 = User.create(name: "Jane Doe", email: "example2@example.com", password: "password")
-user2.lists.create(name: "Christmas Gifts")
-Item.create(name: "Oranges", info: "Organic only", user_id: user1.id, list_id: user1.lists.first.id)
-Item.create(name: "Spinach", info: "Organic only", user_id: user1.id, list_id: user1.lists.first.id)
-Item.create(name: "Cheese", info: "Farm Fresh only", user_id: user1.id, list_id: user1.lists.first.id)
-Item.create(name: "Xbox", info: "Newest Version", user_id: user2.id, list_id: user2.lists.first.id)
-Item.create(name: "Playstation", info: "Newest Version", user_id: user2.id, list_id: user2.lists.first.id)
-Item.create(name: "Makeup", info: "Sephora", user_id: user2.id, list_id: user2.lists.first.id)
+user = User.create!(email: "example@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Doe")
+user2 = User.create!(email: "example2@example.com", password: "password", password_confirmation: "password", first_name: "Jane", last_name: "Doe")
+user.activate!
+user2.activate!
 
-
-
+user.lists.create([{ name: 'Groceries' }, { name: 'Christmas Gifts' }])
+user2.lists.create([{ name: 'School Supplies' }, { name: 'Gifts' }])
 
 

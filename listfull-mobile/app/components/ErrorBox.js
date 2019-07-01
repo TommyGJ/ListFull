@@ -16,16 +16,15 @@ const ErrorBox = props => {
 }
 
 const ErrorMessage = props => {
-//	console.log(props.messages);
-		return (props.messages.map(subarray => subarray.map(element => {
-		//	console.log(element);
+		console.log(props.messages);
+		return (props.messages.map(block => Object.keys(block).map(key => block[key].map(data => {
 			return(
-				<Text key = {element.id} style = {styles.errorText}> 
-					{element.id + ' ' + element.title}
+				<Text key = {key} style = {styles.errorText}> 
+					{ key + ' ' + data.toLowerCase() }
 				</Text>
 			);
 
-	})));
+	}))));
 	
 	
 

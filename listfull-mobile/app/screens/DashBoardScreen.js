@@ -29,6 +29,7 @@ export default class DashBoardScreen extends React.Component {
 			const value = await SecureStore.getItemAsync('user_token');
 			if (value !== null) {
 				this.setState({token: value, userID: decode_jwt(value)["sub"]});
+				
 			}
 		} catch (error) {
 				 // Error retrieving data
@@ -37,10 +38,10 @@ export default class DashBoardScreen extends React.Component {
 
 	_getUserInfo = async () => {
 		try {
-			const {data} = await API.get('/api/v1/users/' + String(this.state.userID), {
+			const {data} = await API.get('/api/v1/me', {
 				headers: {Authorization: "Bearer " + String(this.state.token)}
 			});
-			console.log(data);
+			//console.log(data);
 			this._storeUserInfo(data);
 		} catch(e) {
 			console.log(e);

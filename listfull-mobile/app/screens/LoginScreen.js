@@ -28,25 +28,26 @@ export default class LoginScreen extends React.Component {
 
 	_handleLogin = async () => {
 		try {
-			const response = await API.post('/api/v1/user_token', {
-				auth: {email: this.state.email, password: this.state.password}
+			const response = await API.post('/api/v1/authenticate', {
+				auth: { email: this.state.email, password: this.state.password }
 			})
-			//console.log(response);
-			this._storeData(response.data)
+			console.log(response.data);
+			this._storeData(response.data);
 			this.props.navigation.navigate('App');
 
 		} catch(error) {
-			if (error.response["status"] === 404) {
-				this.setState({err: true, email: '', password: '', errMessage: [[{id: "email and/or password", title: "are not correct"}]]});
-			} else if (error.response["status"] === 422) {
-				this.setState({err: true, errMessage: [ error.response["data"]["errors"]] }); 
-			}
+			console.log(error.response.data.errors);
+			this.setState({err: true, errMessage: error.response.data.errors});
 		}
 	}
 
+	componentDidMount() {
+		this.setState({err: false});
+	}
+
+
 	_handlePassword = password => {
 		this.setState({password: password});
-		console.log(this.state.password);
 	}
 
 	_handleButton = () => {
@@ -58,7 +59,7 @@ export default class LoginScreen extends React.Component {
 
 	_storeData = async (data) => {
 		try {
-			await SecureStore.setItemAsync('user_token', data.jwt);
+			await SecureStore.setItemAsync('user_token', data.token);
 		} catch (error) {
 			console.log(error);
 		}
@@ -86,7 +87,11 @@ export default class LoginScreen extends React.Component {
 				</View>
 				<View style = {styles.bottomContainer}>
 					<Button
-						onPress={this._handleLogin}
+						onPress={() => {
+							this.setState({ err: false, errMessage: [] }, () =>
+								this._handleLogin()
+							);
+						}}
 						title="Log In"
 						disabled = {this._handleButton()}
 					/>

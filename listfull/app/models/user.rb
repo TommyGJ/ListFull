@@ -1,36 +1,25 @@
 class User < ApplicationRecord
-  validates :email,    presence: true
-  validates :name,     presence: true
-  validates :password, presence:  true, 
-                       length: {:within => 6..100}
-                      
-  has_secure_password
-  before_create :confirmation_token
-  has_many :lists
+  authenticates_with_sorcery!
+
   has_many :items
+  has_many :lists
 
-  def to_token_payload
-    {
-      sub: id,
-      email: email,
-    }
-  end
+  validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
+  validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
+  validates :password_confirmation, presence: true, if: -> { new_record? || changes[:crypted_password] }
 
-  def self.from_token_payload(payload)
-    self.find(payload(:id))
-  end
+  validates :email, uniqueness: true
+  validates :first_name, presence: true
+  validates :last_name, presence: true
+  validates_format_of :email, :with => /\A\S+@.+\.\S+\z/
 
-  def email_activate
-    self.email_confirmed = true
-    self.confirm_token = nil
-    save!(:validate => false)
-  end
-
-
-  private
-  def confirmation_token
-    if self.confirm_token.blank?
-      self.confirm_token = SecureRandom.urlsafe_base64.to_s
+  def isActive?
+    if (self.activation_state == "active")
+      return true
+    else
+      return false
     end
   end
+
+
 end
