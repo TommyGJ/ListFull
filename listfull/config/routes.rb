@@ -3,8 +3,13 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       post 'authenticate' => 'user_authentication#authenticate'
+
       get 'me', to: 'users#show'
       post 'new_account', to: 'users#create'
+
+      resources :lists do
+        resources :items
+      end
     end
   end
 

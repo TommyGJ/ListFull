@@ -27,7 +27,5 @@ RSpec.describe User, type: :model do
     it "is valid with all fields filled out" do
       expect(user).to be_valid
     end
-
-
   end
 end

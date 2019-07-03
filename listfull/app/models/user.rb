@@ -21,5 +21,13 @@ class User < ApplicationRecord
     end
   end
 
+  def ownsList?(list)
+    if (list.user_id == self.id)
+      return true
+    else
+      return false
+    end
+  end
+
 
 end

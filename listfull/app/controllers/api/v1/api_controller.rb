@@ -13,7 +13,6 @@ module Api::V1
       payload = JsonWebToken.decode(auth_token)
       if payload.present?
         @current_user = User.find(payload['sub'])
-        p @current_user
       else
         render json: {errors: ["Invalid Token Authorization"]}, status: :unauthorized
       end

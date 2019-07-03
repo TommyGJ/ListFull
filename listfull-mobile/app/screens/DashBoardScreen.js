@@ -1,14 +1,13 @@
-import React from 'react'
-import { View, Text } from 'react-native'
+import React from 'react';
+import { View, Text } from 'react-native';
 import {AsyncStorage} from 'react-native';
-import { decode_jwt } from '../utils/Decode.js'
-import axios from 'axios'
-import API from './../utils/API.js'
-import  ShowLists  from './../components/ShowLists.js'
+import { decode_jwt } from '../utils/Decode.js';
+import axios from 'axios';
+import API from './../utils/API.js';
+import  ShowLists  from './../components/ShowLists.js';
 import * as SecureStore from 'expo-secure-store';
-
-
-
+import AddList from './../components/AddList.js';
+import AddListModalScreen from './../screens/AddListModalScreen.js'
 
 export default class DashBoardScreen extends React.Component {
 	state = {
@@ -17,12 +16,12 @@ export default class DashBoardScreen extends React.Component {
 		userEmail: '',
 		userName: '',
 		userLists: [],
+		showModal: false,
 	}
 
-	 static navigationOptions = {
-		 title: "Listr"
-	 };
-
+	static navigationOptions = {
+		 title: "My Lists"
+	};
 
 	_retrieveData = async () => {
 	  try {
@@ -34,6 +33,12 @@ export default class DashBoardScreen extends React.Component {
 		} catch (error) {
 				 // Error retrieving data
 		}
+	}
+	_onPress = (listData) => {
+		console.log(listData)
+		this.props.navigation.navigate('ListView', {
+			list: listData,
+		});
 	}
 
 	_getUserInfo = async () => {
@@ -48,6 +53,17 @@ export default class DashBoardScreen extends React.Component {
 		}
 	}
 
+	_showNewListForm = async () => {
+		await this.setState({showModal: !this.state.showModal},() => {
+			console.log("showModal state = ");
+			console.log(this.state.showModal);
+		});
+	}
+
+	_onPressProfileImage = () => {
+		console.log("Press profile image");
+	}
+
 	_storeUserInfo = data => {
 		const email = data["data"]["attributes"]["email"]; 
 		const name = data["data"]["attributes"]["name"]; 
@@ -60,24 +76,25 @@ export default class DashBoardScreen extends React.Component {
 				lastUpdate: element["attributes"]["updated-at"], 
 			}
 		});
-
 		this.setState({userEmail: email, userName: name, userLists: [...lists]});
-		console.log(this.state.userEmail);
-		console.log(this.state.userName);
-		console.log(this.state.userLists);
-
 	}
 
 	async componentDidMount() {
 		await this._retrieveData();
-		console.log(this.state.userID);
 		await this._getUserInfo();
+		await this.setState({showModal: false});
 	}
 				
 	render() {
 		return (
-			<View style = {{flex: 1, justifyContent: 'center', alignItems: 'center'}}>
-				<ShowLists lists = {this.state.userLists} />
+			<View style = {{flex: 1}}>
+				<View style = {{flex: 1}} >
+					<AddList newList={this._showNewListForm} viewImage={this._onPressProfileImage} />
+				</View>
+				<View style = {{flex: 7}}>
+					<ShowLists lists = {this.state.userLists} onPress = { this._onPress } />
+				</View>
+					<AddListModalScreen isModalVisible={this.state.showModal} closeModal={() => this.setState({showModal: !this.state.showModal})}   />
 			</View>
 		);
 	}

@@ -1,16 +1,28 @@
 import React from 'react';
-import { StyleSheet, Text, View, Button, FlatList, Image } from 'react-native';
+import { StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity } from 'react-native';
 
-const ShowLists = props => {
-
-	const renderItem = ({item}) => {
-		console.log(item);
-		return(
+const List = props => {
+	const onPress = () => {
+		props.onPress(props.item);
+	}
+	return(
+		<TouchableOpacity onPress = {onPress}>
 			<View style = {styles.row}>
 				<Text>
-					{item.name}
+					{props.item.name}
 				</Text>
 			</View>
+		</TouchableOpacity>
+	);
+}
+
+const ShowLists = props => {
+	const renderItem = ({item}) => {
+		return(
+			<List 
+				item = {item}
+				onPress = {props.onPress}
+			/>
 		);
 	};
 
@@ -35,11 +47,12 @@ const styles = StyleSheet.create({
 		marginTop: 2,
 	},
 	row: {
-		flex: 2,
+		flex: 1,
 		alignItems: 'center',
 		backgroundColor: '#fff',
-		marginBottom: 7,
+		marginBottom: 2,
+		paddingTop: 20,
+		paddingBottom: 20,
 	}
-
 })
 

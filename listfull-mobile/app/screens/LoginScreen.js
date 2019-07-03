@@ -6,8 +6,6 @@ import API from './../utils/API.js'
 import * as SecureStore from 'expo-secure-store';
 import ErrorBox from '../components/ErrorBox.js'
 
-
-
 export default class LoginScreen extends React.Component {
 	state = {
 		email: 'example@example.com',

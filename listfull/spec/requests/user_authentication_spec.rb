@@ -2,7 +2,7 @@ require "rails_helper"
 
 RSpec.describe "User Authentication", :type => :request do
   url = 'https://localhost:3000/api/v1/authenticate'
-  let!(:user) { create(:user) }
+  let!(:user) { create(:user, activation_state: "pending") }
 
   context "with accurate credentials" do
 

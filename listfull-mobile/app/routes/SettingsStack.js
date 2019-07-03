@@ -1,16 +1,14 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button } from 'react-native';
 import { createBottomTabNavigator, createStackNavigator } from 'react-navigation';
-import DashBoardScreen from './../screens/DashBoardScreen.js'
-import ListViewScreen from './../screens/ListViewScreen.js'
+import SettingsScreen from './../screens/SettingsScreen.js'
 
-const DashBoardStack = createStackNavigator(
+const SettingsStack = createStackNavigator(
 	{
-		DashBoard: DashBoardScreen,
-		ListView: ListViewScreen,
+		Settings: SettingsScreen,
 	},
 	{
-		initialRouteName: "DashBoard",
+		initialRouteName: "Settings",
 		cardStyle: {
 			backgroundColor: '#E9EBEC',
 		},
@@ -27,5 +25,5 @@ const DashBoardStack = createStackNavigator(
 	}
 );
 
-export default DashBoardStack
+export default SettingsStack
 

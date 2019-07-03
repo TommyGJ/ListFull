@@ -11,7 +11,13 @@ user2 = User.create!(email: "example2@example.com", password: "password", passwo
 user.activate!
 user2.activate!
 
-user.lists.create([{ name: 'Groceries' }, { name: 'Christmas Gifts' }])
+user.lists.create([{ name: 'Groceries' }, { name: 'Christmas Gifts' },{ name: 'Groceries' }, { name: 'Christmas Gifts' },{ name: 'Groceries' }, { name: 'Christmas Gifts' },{ name: 'Groceries' }, { name: 'Christmas Gifts' },{ name: 'Groceries' }, { name: 'Christmas Gifts' },{ name: 'Groceries' }, { name: 'Christmas Gifts' }])
 user2.lists.create([{ name: 'School Supplies' }, { name: 'Gifts' }])
+Item.create(name: 'Avocados', info: 'From Mexico', user_id: user.id, list_id: user.lists[0].id)
+Item.create(name: 'Almonds', info: 'From California', user_id: user.id, list_id: user.lists[0].id)
+
+
+
+
 
 
