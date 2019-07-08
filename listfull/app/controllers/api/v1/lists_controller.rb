@@ -17,8 +17,7 @@ module Api::V1
     end
 
     def create
-      p list_params["deadline"]
-      list = List.new(name: list_params["name"], deadline: Time.at(list_params["deadline"] / 1000))
+      list = List.new(name: list_params["name"], deadline: Time.at(list_params["deadline"].to_f / 1000))
       list.user_id = @current_user.id
       if list.save
         render json: ListSerializer.new(list).serialized_json

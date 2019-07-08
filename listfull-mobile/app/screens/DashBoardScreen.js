@@ -24,7 +24,7 @@ export default class DashBoardScreen extends React.Component {
 		canShowErr: false,
 		err: false,
 		errMessage: [],
-		deadline: new Date(),
+		newListDeadline: new Date(),
 	}
 
 	static navigationOptions = {
@@ -62,7 +62,7 @@ export default class DashBoardScreen extends React.Component {
 
 	_postNewList = async () => {
 		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
-		const listData = { list: { name: this.state.newListName, deadline: this.state.deadline.getTime() }};
+		const listData = { list: { name: this.state.newListName, deadline: this.state.newListDeadline.getTime() }};
 		try {
 			const {data} = await API.post('/api/v1/lists', listData, config);
 			this._addToMyLists(data);	
@@ -108,29 +108,36 @@ export default class DashBoardScreen extends React.Component {
 		const firstName = data.data.attributes.first_name;
 		const lastName = data.data.attributes.last_name; 
 		const lists = data["included"].map( element => {
+			let deadline = new Date(parseFloat(element["attributes"]["deadline"])); 
+			let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
 			return {
 				id: element["id"], 
 				name: element["attributes"]["name"], 
 				ownerID: element["relationships"]["user"]["data"]["id"],
 				creationDate: element["attributes"]["created-at"], 
 				lastUpdate: element["attributes"]["updated-at"], 
+				deadline: deadline.toLocaleDateString('en-US')  
 			}
 		});
+		console.log(lists);
 		this.setState({userEmail: email, userFirstName: firstName, userLastName: lastName, userLists: [...lists.reverse()]});
 	}
 
 	_addToMyLists = data => {
+		let deadline = new Date(parseFloat(data["data"]["attributes"]["deadline"])); 
 		const addedList = {
 			id: data["data"]["id"],
 			name: data["data"]["attributes"]["name"],
 			ownerID: data["data"]["relationships"]["user"]["data"]["id"],
+			deadline: deadline.toLocaleDateString('en-US'), 
+
 		}
 		this.setState({userLists: [addedList, ...this.state.userLists]});
 	}
 
 	_onCloseModal = () => {
 		this.setState({isModalVisible: !this.state.isModalVisible})
-		this.setState({newListName: '', deadline: new Date()});
+		this.setState({newListName: '', newListDeadline: new Date()});
 	}
 
 	_newListNameHandler = (name) => {
@@ -145,8 +152,8 @@ export default class DashBoardScreen extends React.Component {
 	}
 
 	_setDeadline = (newDeadline) => {
-		this.setState({deadline: newDeadline}, () =>
-		console.log(this.state.deadline.toLocaleDateString()));
+		this.setState({newListDeadline: newDeadline}, () =>
+		console.log(this.state.newListDeadline.toLocaleDateString()));
 	}
 
 	_closeErrorModal = () => {
@@ -179,7 +186,7 @@ export default class DashBoardScreen extends React.Component {
 					hideModalContentWhileAnimating = {true}
 					onModalHide={() => this.setState({canShowErr: true})}
 				>
-					<AddListForm newListName={this.state.newListName} closeModal={this._onCloseModal} newListNameHandler = {this._newListNameHandler} commitList = {this._addNewList} setDeadline={this._setDeadline} deadline={this.state.deadline}/>
+					<AddListForm newListName={this.state.newListName} closeModal={this._onCloseModal} newListNameHandler = {this._newListNameHandler} commitList = {this._addNewList} setDeadline={this._setDeadline} deadline={this.state.newListDeadline}/>
 				</Modal>
 				<ErrorModal 
 					err = {this.state.err}

@@ -9,13 +9,15 @@ RSpec.describe "Create New List", :type => :request do
     let(:valid_list_params) do
       {
         list: {
-          name: "Groceries"
+          name: "Groceries",
+          deadline: (Time.now.to_f * 1000).to_f
         }
       }
     end
 
     it "returns http status 200" do
       post url, params: valid_list_params, headers: { 'Authorization': "Bearer " + @token }  
+      p response
       expect(response).to have_http_status(200)
     end
     

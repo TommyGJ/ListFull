@@ -13,18 +13,15 @@ const Row = props => {
 	return(
 		<View style = {styles.row}>
 			<View style={styles.headers}>
-				<View style={{flex:1, alignItems: 'flex-start', marginTop: 5}}>
-					<Text>
-					Owner: Me
-					</Text>
-					<Text>
-						Deadline = {
+				<View style={styles.headerInfoSub} >
+					<Text style={{color: 'gray'}}>
+					Owner: Tommy Johnson 
 					</Text>
 				</View>
-				<View style={{flex:1, alignItems: 'flex-end'}}>
-					<TouchableOpacity onPress={onPressDelete}>
-						<MaterialCommunityIcons name="delete" size={30} color="gray"/>
-					</TouchableOpacity>
+				<View style={styles.headerInfoSub}>
+					<Text style={{color: 'gray'}}>
+					Deadline: {props.item.deadline}
+					</Text>
 				</View>
 			</View>
 			<TouchableOpacity onPress = {onPress}>
@@ -34,6 +31,13 @@ const Row = props => {
 					</Text>
 				</View>
 			</TouchableOpacity>
+			<View style={styles.footer}>
+				<View style={{flex:1, alignItems: 'flex-end'}}>
+					<TouchableOpacity onPress={onPressDelete}>
+						<MaterialCommunityIcons name="delete" size={30} color="gray"/>
+					</TouchableOpacity>
+				</View>
+			</View>
 		</View>
 	);
 }
@@ -67,6 +71,8 @@ const styles = StyleSheet.create({
 		flexDirection: 'row',
 		marginLeft: 5,
 		marginRight: 5,
+		marginTop: 5,
+		alignItems: 'flex-start',
 	},
 	row: {
 		flex: 1,
@@ -76,11 +82,24 @@ const styles = StyleSheet.create({
 		marginRight: 2,
 		marginLeft: 2,
 		paddingTop: 5,
-		paddingBottom: 25,
+		paddingBottom: 5,
 	},
 	body: {
 		flex: 5,
 		alignItems: 'center',
-	}
+	},
+	headerInfoSub: {
+		paddingRight: 5, 
+		paddingLeft: 5, 
+		borderRightWidth: 1, 
+		borderRightColor: 'lightgray',
+	},
+	footer: {
+		flex: 1,
+		flexDirection: 'row',
+		marginLeft: 5,
+		marginRight: 5,
+	},
+
 })
 

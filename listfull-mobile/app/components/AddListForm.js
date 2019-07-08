@@ -42,6 +42,7 @@ const AddListForm = props => {
 					<DatePickerIOS
 						date={props.deadline}
 						onDateChange={props.setDeadline}
+						mode={'date'}
 					/>
 				</View>
 				<View style = {{flex: 1}}>
