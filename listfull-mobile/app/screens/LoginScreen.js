@@ -1,10 +1,11 @@
 import React from 'react'
-import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button } from 'react-native'
+import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button, Keyboard } from 'react-native'
 import  Constants  from 'expo-constants'
 import axios from 'axios'
 import API from './../utils/API.js'
 import * as SecureStore from 'expo-secure-store';
-import ErrorBox from '../components/ErrorBox.js'
+import ErrorModal from '../components/ErrorModal.js'
+
 
 export default class LoginScreen extends React.Component {
 	state = {
@@ -17,7 +18,6 @@ export default class LoginScreen extends React.Component {
 	static navigationOptions = {
 		 title: "Login"
 	};
-
 
 	_handleEmail = email => {
 		this.setState({email: email.toLowerCase()});
@@ -39,11 +39,12 @@ export default class LoginScreen extends React.Component {
 		}
 	}
 
+	_closeError = () => {
+		this.setState({err: false});
+	}
 	componentDidMount() {
 		this.setState({err: false});
 	}
-
-
 	_handlePassword = password => {
 		this.setState({password: password});
 	}
@@ -67,7 +68,13 @@ export default class LoginScreen extends React.Component {
 		return (
 			<KeyboardAvoidingView behavior = "padding" style={styles.container}>
 				<View style = {styles.topContainer}>
-					<ErrorBox isError = {this.state.err} messages = {this.state.errMessage}  />
+					<ErrorModal 
+						err={this.state.err}
+						close={this._closeError}
+						canShowErr={true}
+						headerMessage={"Login Error!"}
+						errMessage = {this.state.errMessage}
+					/>
 					<TextInput 
 						style = {styles.text_box}
 						value = {this.state.email}
@@ -86,9 +93,9 @@ export default class LoginScreen extends React.Component {
 				<View style = {styles.bottomContainer}>
 					<Button
 						onPress={() => {
-							this.setState({ err: false, errMessage: [] }, () =>
-								this._handleLogin()
-							);
+								Keyboard.dismiss();
+								this._handleLogin();
+							
 						}}
 						title="Log In"
 						disabled = {this._handleButton()}

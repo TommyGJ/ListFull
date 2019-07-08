@@ -23,7 +23,7 @@ const AddList = props => {
 							resizeMode: 'cover',
 						}}
 						source={{
-							uri: GravatarURL("example@example.com"),
+							uri: GravatarURL(props.userEmail),
 						}}
 					/>
 				</TouchableOpacity>

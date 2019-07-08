@@ -4,7 +4,6 @@ import {AsyncStorage} from 'react-native';
 import { decode_jwt } from '../utils/Decode.js'
 import axios from 'axios'
 import API from './../utils/API.js'
-import  ShowLists  from './../components/ShowLists.js'
 import * as SecureStore from 'expo-secure-store';
 
 

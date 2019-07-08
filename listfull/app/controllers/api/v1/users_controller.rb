@@ -15,7 +15,6 @@ module Api::V1
         UserMailer.activation_needed_email(user).deliver_later
         render json: UserSerializer.new(user).serialized_json
       else
-        p user.errors.messages
         render json: { errors: [user.errors.messages] }, status: 422
       end
 

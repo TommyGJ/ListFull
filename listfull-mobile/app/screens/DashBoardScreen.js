@@ -1,22 +1,30 @@
 import React from 'react';
-import { View, Text } from 'react-native';
-import {AsyncStorage} from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
+import { AsyncStorage } from 'react-native';
 import { decode_jwt } from '../utils/Decode.js';
 import axios from 'axios';
 import API from './../utils/API.js';
-import  ShowLists  from './../components/ShowLists.js';
+import TouchableList  from './../components/TouchableList.js';
 import * as SecureStore from 'expo-secure-store';
 import AddList from './../components/AddList.js';
-import AddListModalScreen from './../screens/AddListModalScreen.js'
+import AddListForm from './../components/AddListForm.js';
+import Modal from 'react-native-modal';
+import ErrorModal from './../components/ErrorModal.js';
 
 export default class DashBoardScreen extends React.Component {
 	state = {
 		token: null,
 		userID: null,
 		userEmail: '',
-		userName: '',
+		userFirstName: '',
+		userLastName: '',
 		userLists: [],
-		showModal: false,
+		isModalVisible: false,
+		newListName: '',
+		canShowErr: false,
+		err: false,
+		errMessage: [],
+		deadline: new Date(),
 	}
 
 	static navigationOptions = {
@@ -28,7 +36,6 @@ export default class DashBoardScreen extends React.Component {
 			const value = await SecureStore.getItemAsync('user_token');
 			if (value !== null) {
 				this.setState({token: value, userID: decode_jwt(value)["sub"]});
-				
 			}
 		} catch (error) {
 				 // Error retrieving data
@@ -53,20 +60,53 @@ export default class DashBoardScreen extends React.Component {
 		}
 	}
 
-	_showNewListForm = async () => {
-		await this.setState({showModal: !this.state.showModal},() => {
+	_postNewList = async () => {
+		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
+		const listData = { list: { name: this.state.newListName, deadline: this.state.deadline.getTime() }};
+		try {
+			const {data} = await API.post('/api/v1/lists', listData, config);
+			this._addToMyLists(data);	
+		} catch(e) {
+			console.log(e.response.data.errors);
+			this.setState({err: true, errMessage: e.response.data.errors});
+			console.log(this.state.err);
+		}
+	}
+
+	_deleteList = async (list) => {
+		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
+		console.log(list);
+		const listID = list.id;
+		try {
+			const {data} = await API.delete('/api/v1/lists/' + String(listID),config); 
+			this._deleteFromMyLists(listID);
+		} catch(e) {
+			console.log(e.response.data.errors);
+		}
+	}
+
+	_deleteFromMyLists = (listID) => {
+		const newUserLists = this.state.userLists.filter(list => list.id !== listID); 
+		console.log(newUserLists);
+		this.setState({userLists: [...newUserLists]});
+	}
+
+	_showNewListForm = () => {
+			this.setState({isModalVisible: !this.state.isModalVisible, canShowErr: false},() => {
 			console.log("showModal state = ");
-			console.log(this.state.showModal);
+			console.log(this.state.isModalVisible);
 		});
 	}
 
 	_onPressProfileImage = () => {
+		//TODO
 		console.log("Press profile image");
 	}
 
 	_storeUserInfo = data => {
 		const email = data["data"]["attributes"]["email"]; 
-		const name = data["data"]["attributes"]["name"]; 
+		const firstName = data.data.attributes.first_name;
+		const lastName = data.data.attributes.last_name; 
 		const lists = data["included"].map( element => {
 			return {
 				id: element["id"], 
@@ -76,7 +116,41 @@ export default class DashBoardScreen extends React.Component {
 				lastUpdate: element["attributes"]["updated-at"], 
 			}
 		});
-		this.setState({userEmail: email, userName: name, userLists: [...lists]});
+		this.setState({userEmail: email, userFirstName: firstName, userLastName: lastName, userLists: [...lists.reverse()]});
+	}
+
+	_addToMyLists = data => {
+		const addedList = {
+			id: data["data"]["id"],
+			name: data["data"]["attributes"]["name"],
+			ownerID: data["data"]["relationships"]["user"]["data"]["id"],
+		}
+		this.setState({userLists: [addedList, ...this.state.userLists]});
+	}
+
+	_onCloseModal = () => {
+		this.setState({isModalVisible: !this.state.isModalVisible})
+		this.setState({newListName: '', deadline: new Date()});
+	}
+
+	_newListNameHandler = (name) => {
+		console.log(name);
+		this.setState({newListName: name});
+		console.log(this.state.newListName);
+	}
+
+	_addNewList = () => {
+		this._postNewList();
+		this._onCloseModal();
+	}
+
+	_setDeadline = (newDeadline) => {
+		this.setState({deadline: newDeadline}, () =>
+		console.log(this.state.deadline.toLocaleDateString()));
+	}
+
+	_closeErrorModal = () => {
+		this.setState({err: !this.state.err, canShowErr: !this.state.canShowErr});
 	}
 
 	async componentDidMount() {
@@ -89,12 +163,31 @@ export default class DashBoardScreen extends React.Component {
 		return (
 			<View style = {{flex: 1}}>
 				<View style = {{flex: 1}} >
-					<AddList newList={this._showNewListForm} viewImage={this._onPressProfileImage} />
+					<AddList userEmail={this.state.userEmail} newList={this._showNewListForm} viewImage={this._onPressProfileImage} />
 				</View>
 				<View style = {{flex: 7}}>
-					<ShowLists lists = {this.state.userLists} onPress = { this._onPress } />
+					<TouchableList onPressDelete={this._deleteList} lists = {this.state.userLists} onPressRow = { this._onPress } />
 				</View>
-					<AddListModalScreen isModalVisible={this.state.showModal} closeModal={() => this.setState({showModal: !this.state.showModal})}   />
+				<Modal 
+					isVisible={this.state.isModalVisible}
+	//					onBackdropPress={this._onCloseModal}
+					animationInTiming={1000}
+					animationOutTiming={300}
+					onSwipeComplete={this._onCloseModal}
+					swipeDirection="down"
+					animationOut='slideOutDown'
+					hideModalContentWhileAnimating = {true}
+					onModalHide={() => this.setState({canShowErr: true})}
+				>
+					<AddListForm newListName={this.state.newListName} closeModal={this._onCloseModal} newListNameHandler = {this._newListNameHandler} commitList = {this._addNewList} setDeadline={this._setDeadline} deadline={this.state.deadline}/>
+				</Modal>
+				<ErrorModal 
+					err = {this.state.err}
+					canShowErr = {this.state.canShowErr}
+					close = {this._closeErrorModal} 
+					headerMessage={"Can't Add New List"} 
+					errMessage = {this.state.errMessage}
+				/>
 			</View>
 		);
 	}

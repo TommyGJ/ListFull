@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button } from 'react-native'
+import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button, Keyboard } from 'react-native'
 import  Constants  from 'expo-constants'
 import axios from 'axios'
 import API from './../utils/API.js'
 import {AsyncStorage} from 'react-native';
-import ErrorBox from '../components/ErrorBox.js'
+import ErrorModal from '../components/ErrorModal.js'
 
 
 export default class SignUpScreen extends React.Component {
@@ -34,6 +34,10 @@ export default class SignUpScreen extends React.Component {
 		return re.test(this.state.email);
 	}
 
+	_closeError = () => {
+		this.setState({err: false});
+	}
+
 	_createAccount = async () => {
 		try {
 			const response = await API.post('/api/v1/new_account', {
@@ -54,24 +58,22 @@ export default class SignUpScreen extends React.Component {
 		}
 	}
 
-	_resetErrors = () => {
-		if (this.state.err) {
-			this.setState(prevState => ({err: false , errMessage: []  }));
-		}
-	}
-
-
 	render() {
 		return (
 			<KeyboardAvoidingView behavior = "padding" style={styles.container}>
 				<View style = {styles.topContainer}>
-					<ErrorBox isError = {this.state.err} messages = {this.state.errMessage}  />
+					<ErrorModal 
+						err={this.state.err}
+						close={this._closeError}
+						canShowErr={true}
+						headerMessage={"New Account Error!"}
+						errMessage = {this.state.errMessage}
+					/>
 					<TextInput 
 						style = {styles.text_box}
 						value = {this.state.email}
 						onChangeText = {email => {	
 							this.setState({email: email.toLowerCase()});
-							this._resetErrors();
 						}}
 						placeholder = "Email"
 						keyboardType = 'email-address'
@@ -81,7 +83,6 @@ export default class SignUpScreen extends React.Component {
 						value = {this.state.firstName}
 						onChangeText = {(firstName) => {
 							this.setState({firstName: firstName});
-							this._resetErrors();
 						}}
 						placeholder = "First Name"
 					/>  
@@ -90,7 +91,6 @@ export default class SignUpScreen extends React.Component {
 						value = {this.state.lastName}
 						onChangeText = {(lastName) => {
 							this.setState({lastName: lastName});
-							this._resetErrors()
 						}}
 						placeholder = "Last Name"
 					/>  
@@ -102,7 +102,6 @@ export default class SignUpScreen extends React.Component {
 						value = {this.state.password}
 						onChangeText = {password => {
 							this.setState({password: password});
-							this._resetErrors();
 						}}
 						placeholder = "Password"
 						secureTextEntry = {true}
@@ -112,17 +111,16 @@ export default class SignUpScreen extends React.Component {
 						value = {this.state.password_confirmation}
 						onChangeText = {password_confirmation => {
 							this.setState({password_confirmation: password_confirmation});
-							this._resetErrors();
 						}}
 						placeholder = "Password Confirmation"
 						secureTextEntry = {true}
 					/>  
 					<Button
-						onPress={() => {
-							this.setState({ err: false, errMessage: [] }, () =>
-									this._createAccount()
-							);
-						}}
+						onPress={() => { 
+								Keyboard.dismiss();
+								this._createAccount();
+							}
+						}
 						title="Create Account"
 						disabled = {this._handleButton()}
 					/>

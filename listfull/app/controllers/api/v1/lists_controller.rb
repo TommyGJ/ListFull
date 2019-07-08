@@ -14,8 +14,34 @@ module Api::V1
       end
     rescue ActiveRecord::RecordNotFound
       render json: { errors: [ :list => ["does not exist" ]]}, status: 404 
+    end
 
+    def create
+      p list_params["deadline"]
+      list = List.new(name: list_params["name"], deadline: Time.at(list_params["deadline"] / 1000))
+      list.user_id = @current_user.id
+      if list.save
+        render json: ListSerializer.new(list).serialized_json
+      else
+        render json: { errors: [list.errors.messages] }, status: 422 
+      end
+    end
 
+    def destroy
+      @list = List.find(params["id"])
+      if @current_user.ownsList?(@list)
+        @list.destroy
+      else
+        render json: { errors: [ :list => ["does not belong to user" ]]}, status: 403 
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [ :list => ["does not exist" ]]}, status: 404 
+    end
+
+    private 
+
+    def list_params
+      params.require(:list).permit(:name, :deadline)
     end
   end
 end

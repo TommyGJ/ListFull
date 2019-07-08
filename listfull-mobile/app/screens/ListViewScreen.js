@@ -5,7 +5,7 @@ import { decode_jwt } from '../utils/Decode.js'
 import axios from 'axios'
 import API from './../utils/API.js'
 import * as SecureStore from 'expo-secure-store';
-import ShowLists from './../components/ShowLists.js'
+import TouchableList from './../components/TouchableList.js'
 import AddList from './../components/AddList.js'
 
 export default class ListViewScreen extends React.Component {
@@ -76,7 +76,7 @@ export default class ListViewScreen extends React.Component {
 	render() {
 		return(
 			<View style = {{ flex: 1 }}>
-				<ShowLists lists = {this.state.items}  />
+				<TouchableList lists = {this.state.items}  />
 			</View>
 		);
 	}

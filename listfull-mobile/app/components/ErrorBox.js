@@ -5,7 +5,7 @@ const ErrorBox = props => {
 
 	if (props.isError) {
 		return (
-			<View style = {styles.errorBox}>
+			<View style = {{alignItems: 'center'}}>
 				<ErrorMessage messages = {props.messages}  />
 			</View>
 			
@@ -19,27 +19,14 @@ const ErrorMessage = props => {
 		console.log(props.messages);
 		return (props.messages.map(block => Object.keys(block).map(key => block[key].map(data => {
 			return(
-				<Text key = {key} style = {styles.errorText}> 
+				<Text key = {key} style = {{color: 'gray'}}> 
 					{ key + ' ' + data.toLowerCase() }
 				</Text>
 			);
-
 	}))));
-	
-	
-
 }
 
 export default ErrorBox;
 
-styles = StyleSheet.create({
-	errorBox: {
-		alignItems: 'center',
-	},
-	errorText: {
-		color: 'red',
-	}
-
-});
 
 
