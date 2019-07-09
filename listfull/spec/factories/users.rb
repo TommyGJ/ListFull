@@ -13,7 +13,10 @@ FactoryBot.define do
       end
 
       after(:create) do |user,evaluator|
-        create_list(:list, evaluator.lists_count, user: user)
+        user.lists << create_list(:list, evaluator.lists_count)
+        user.lists.each do |list| 
+          list.make_owner!(user)
+        end
       end
     end
   end

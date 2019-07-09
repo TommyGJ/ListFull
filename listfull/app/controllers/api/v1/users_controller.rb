@@ -17,7 +17,6 @@ module Api::V1
       else
         render json: { errors: [user.errors.messages] }, status: 422
       end
-
     end
 
     private

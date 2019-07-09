@@ -15,10 +15,10 @@ RSpec.describe List, type: :model do
       expect{list.save!}.to raise_error(ActiveRecord::RecordInvalid)
     end
 
-    it "is invalid without a user" do
-      list.user_id = nil
-      expect{list.save!}.to raise_error(ActiveRecord::RecordInvalid)
+    it "is invalid without any users" do
+      #TODO
     end
+
   end
 
 

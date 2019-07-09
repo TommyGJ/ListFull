@@ -1,8 +1,8 @@
 class User < ApplicationRecord
   authenticates_with_sorcery!
-
   has_many :items
-  has_many :lists
+  has_many :list_memberships
+  has_many :lists, :through => :list_memberships
 
   validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
   validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }
@@ -21,13 +21,16 @@ class User < ApplicationRecord
     end
   end
 
-  def ownsList?(list)
-    if (list.user_id == self.id)
-      return true
-    else
-      return false
+  def canAccessList?(list)
+    list.users.each do |user|
+      if user.id == self.id
+        return true
+      end
+    return false
     end
   end
 
-
+  def owned_lists
+    list_memberships.ownerships.map(&:list)
+  end
 end

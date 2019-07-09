@@ -15,7 +15,7 @@ const Row = props => {
 			<View style={styles.headers}>
 				<View style={styles.headerInfoSub} >
 					<Text style={{color: 'gray'}}>
-					Owner: Tommy Johnson 
+					Owner: {props.item.ownerName}  
 					</Text>
 				</View>
 				<View style={styles.headerInfoSub}>

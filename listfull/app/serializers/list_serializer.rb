@@ -6,6 +6,14 @@ class ListSerializer
     "#{object.deadline.to_f * 1000}"
   end
 
+  attribute :owner_id do |object|
+    "#{object.owner_id_and_name[:id]}"
+  end
+
+  attribute :owner_name do |object|
+    object.owner_id_and_name[:name]
+  end
+
   has_many :items
-  belongs_to :user
+  has_many :users
 end

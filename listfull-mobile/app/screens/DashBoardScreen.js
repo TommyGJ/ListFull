@@ -53,7 +53,7 @@ export default class DashBoardScreen extends React.Component {
 			const {data} = await API.get('/api/v1/me', {
 				headers: {Authorization: "Bearer " + String(this.state.token)}
 			});
-			//console.log(data);
+			console.log(data);
 			this._storeUserInfo(data);
 		} catch(e) {
 			console.log(e);
@@ -113,7 +113,8 @@ export default class DashBoardScreen extends React.Component {
 			return {
 				id: element["id"], 
 				name: element["attributes"]["name"], 
-				ownerID: element["relationships"]["user"]["data"]["id"],
+				ownerID: element["attributes"]["owner_id"],
+				ownerName: element["attributes"]["owner_name"],
 				creationDate: element["attributes"]["created-at"], 
 				lastUpdate: element["attributes"]["updated-at"], 
 				deadline: deadline.toLocaleDateString('en-US')  
@@ -128,7 +129,8 @@ export default class DashBoardScreen extends React.Component {
 		const addedList = {
 			id: data["data"]["id"],
 			name: data["data"]["attributes"]["name"],
-			ownerID: data["data"]["relationships"]["user"]["data"]["id"],
+			ownerID: data["data"]["attributes"]["owner_id"],
+			ownerName: data["data"]["attributes"]["owner_name"],
 			deadline: deadline.toLocaleDateString('en-US'), 
 
 		}

@@ -4,7 +4,7 @@ module Api::V1
 
     def show
       @list = List.find(params["id"])
-      if @current_user.ownsList?(@list) 
+      if @current_user.canAccessList?(@list) 
         options = {}
         options[:meta] = { total: 1 }
         options[:include] = [:items]
@@ -18,8 +18,9 @@ module Api::V1
 
     def create
       list = List.new(name: list_params["name"], deadline: Time.at(list_params["deadline"].to_f / 1000))
-      list.user_id = @current_user.id
       if list.save
+        list.users << @current_user
+        list.make_owner!(@current_user)
         render json: ListSerializer.new(list).serialized_json
       else
         render json: { errors: [list.errors.messages] }, status: 422 
@@ -28,7 +29,7 @@ module Api::V1
 
     def destroy
       @list = List.find(params["id"])
-      if @current_user.ownsList?(@list)
+      if @current_user == @list.owner
         @list.destroy
       else
         render json: { errors: [ :list => ["does not belong to user" ]]}, status: 403 
