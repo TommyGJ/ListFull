@@ -17,7 +17,6 @@ RSpec.describe "Create New List", :type => :request do
 
     it "returns http status 200" do
       post url, params: valid_list_params, headers: { 'Authorization': "Bearer " + @token }  
-      p response
       expect(response).to have_http_status(200)
     end
     

@@ -1,0 +1,57 @@
+require "rails_helper"
+
+RSpec.describe "Add User to List", :type => :request do
+  base_url = 'https://localhost:3000/api/v1/lists/'
+  let!(:list) { create(:list_with_users) }
+  let!(:url) { base_url + list.id.to_s + '/add_user' } 
+  before do 
+    @user = list.users.first
+    @token = JsonWebToken.encode( sub: @user.id, email: @user.email )
+  end
+
+  describe "failed requests" do
+    before(:each) { patch url, headers: { 'Authorization': "Bearer " + @token }, params:  { user: {email: user_to_add.email } } }
+
+    context "user to add does not exist" do
+      let!(:user_to_add) { build(:user) }
+      before { list.make_owner!(@user) }
+
+      it "returns http status 404" do
+        expect(response).to have_http_status(404)
+      end
+    end
+
+    context "user to add already has access to list" do 
+      let!(:user_to_add) { list.users.last }
+      before { list.make_owner!(@user) }
+
+      it "returns http status 422" do
+        expect(response).to have_http_status(422)
+      end
+    end
+
+    context "user caller does not own list" do
+      let!(:user_to_add) { create(:user) }
+
+      it "returns http status 403" do
+        expect(response).to have_http_status(403)
+      end
+    end
+  end
+
+  describe "successful request" do
+    let!(:user_to_add) { create(:user) }
+    before(:each) { list.make_owner!(@user) }
+    before(:each) { patch url, headers: { 'Authorization': "Bearer " + @token }, params:  { user: {email: user_to_add.email } } }
+
+    it "returns http status 200" do
+      expect(response).to have_http_status(200)
+    end
+  end
+
+
+
+
+
+end
+

@@ -16,11 +16,27 @@ module Api::V1
       render json: { errors: [ :list => ["does not exist" ]]}, status: 404 
     end
 
+    def add_user
+      @list = List.find(params["id"])
+      user_to_add = User.find_by(email: params["user"]["email"])
+      if !user_to_add
+        return render json: { errors: [ "user" => ["can not be found" ]]}, status: 404 
+      elsif user_to_add.canAccessList?(@list)
+        return render json: { errors: [ "user" => ["Already has access to list" ]]}, status: 422
+      elsif !@current_user.ownsList?(@list)
+        return render json: { errors: [ :user => ["does not have permision to add users to list" ]]}, status: 403 
+      else 
+        @list.add_user(user_to_add)
+        return render json: ListSerializer.new(@list).serialized_json
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [ "list" => ["does not exist" ]]}, status: 404 
+    end
+
     def create
-      list = List.new(name: list_params["name"], deadline: Time.at(list_params["deadline"].to_f / 1000))
+      list = List.new(name: list_params["name"], deadline: Time.at(list_params["deadline"].to_f / 1000), info: list_params["info"])
       if list.save
-        list.users << @current_user
-        list.make_owner!(@current_user)
+        list.add_multiple_users_on_creation(@current_user, User.users_from_emails(list_params["users"]))
         render json: ListSerializer.new(list).serialized_json
       else
         render json: { errors: [list.errors.messages] }, status: 422 
@@ -29,8 +45,9 @@ module Api::V1
 
     def destroy
       @list = List.find(params["id"])
-      if @current_user == @list.owner
-        @list.destroy
+      if @list.remove(@current_user)
+        #TODO
+        #Maybe return a json of something?
       else
         render json: { errors: [ :list => ["does not belong to user" ]]}, status: 403 
       end
@@ -41,8 +58,9 @@ module Api::V1
     private 
 
     def list_params
-      params.require(:list).permit(:name, :deadline)
+      params.require(:list).permit(:name, :deadline, :info, :users => [])
     end
+
   end
 end
 

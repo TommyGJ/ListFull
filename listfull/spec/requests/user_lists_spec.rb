@@ -8,7 +8,6 @@ RSpec.describe "Get User Lists", :type => :request do
   context "with a valid token" do
     it "returns http status 200 " do
       get url, headers: { 'Authorization': "Bearer " + @token }  
-      #p response.body
       expect(response).to have_http_status(:ok)
     end
 
@@ -16,7 +15,6 @@ RSpec.describe "Get User Lists", :type => :request do
       get url, headers: { 'Authorization': "Bearer " + @token }  
       parsed_body = JSON.parse(response.body)
       parsed_body["included"].each do |lst|
-        p lst
         expect(lst["type"]).to eq("list")
       end
     end

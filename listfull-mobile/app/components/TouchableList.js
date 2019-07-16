@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
+import nameShortener from './../utils/NameShortener.js';
 
 const Row = props => {
 	const onPress = () => {
@@ -10,17 +11,21 @@ const Row = props => {
 	const onPressDelete = () => {
 		props.onPressDelete(props.item);
 	}
+
+	const onPressAddUser = () => {
+		props.onPressAddUser(props.item);
+	}
 	return(
 		<View style = {styles.row}>
 			<View style={styles.headers}>
-				<View style={styles.headerInfoSub} >
-					<Text style={{color: 'gray'}}>
-					Owner: {props.item.ownerName}  
+				<View style={styles.headerInfoSub}>
+					<Text style={{color: 'gray', fontSize: 12}}>
+					Deadline: {props.item.deadline}
 					</Text>
 				</View>
-				<View style={styles.headerInfoSub}>
-					<Text style={{color: 'gray'}}>
-					Deadline: {props.item.deadline}
+				<View style={styles.headerInfoSub} >
+					<Text style={{color: 'gray', fontSize: 12}}>
+					Owner: {nameShortener(props.item.ownerName)}  
 					</Text>
 				</View>
 			</View>
@@ -32,11 +37,17 @@ const Row = props => {
 				</View>
 			</TouchableOpacity>
 			<View style={styles.footer}>
-				<View style={{flex:1, alignItems: 'flex-end'}}>
+				<View style={styles.subFooter}>
 					<TouchableOpacity onPress={onPressDelete}>
 						<MaterialCommunityIcons name="delete" size={30} color="gray"/>
 					</TouchableOpacity>
 				</View>
+				<View style={styles.subFooter}>
+					<TouchableOpacity onPress={onPressAddUser}>
+						<MaterialIcons name="person-add" size={30} color="gray"/>
+					</TouchableOpacity>
+				</View>
+
 			</View>
 		</View>
 	);
@@ -49,6 +60,7 @@ const TouchableList = props => {
 				item = {item}
 				onPress = {props.onPressRow}
 				onPressDelete = {props.onPressDelete}
+				onPressAddUser = {props.onPressAddUser}
 			/>
 		);
 	};
@@ -56,7 +68,14 @@ const TouchableList = props => {
 	const extractKeys = (item,index) => item.id;
 
 	return (
-		<FlatList style = {styles.lists}  renderItem = {renderItem} data = {props.lists} keyExtractor={extractKeys} />
+		<FlatList 
+			style = {styles.lists}  
+			renderItem = {renderItem} 
+			data = {props.lists} 
+			keyExtractor={extractKeys} 
+			refreshing={props.refreshing}
+			onRefresh  = {props.onRefresh}
+		/>
 	);  
 }
 
@@ -87,6 +106,8 @@ const styles = StyleSheet.create({
 	body: {
 		flex: 5,
 		alignItems: 'center',
+		paddingTop: 5,
+		
 	},
 	headerInfoSub: {
 		paddingRight: 5, 
@@ -96,10 +117,12 @@ const styles = StyleSheet.create({
 	},
 	footer: {
 		flex: 1,
-		flexDirection: 'row',
+		flexDirection: 'row-reverse',
 		marginLeft: 5,
 		marginRight: 5,
 	},
-
+	subFooter: {
+		paddingLeft: 5,
+	}
 })
 

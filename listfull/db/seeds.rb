@@ -8,11 +8,30 @@
 
 user = User.create!(email: "example@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Doe")
 user2 = User.create!(email: "example2@example.com", password: "password", password_confirmation: "password", first_name: "Jane", last_name: "Doe")
+user3 = User.create!(email: "example3@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Smith")
+user4 = User.create!(email: "tgj98@yahoo.com", password: "password", password_confirmation: "password", first_name: "Tommy", last_name: "Johnson")
+
+
 user.activate!
 user2.activate!
+user3.activate!
+user4.activate!
 
-user.lists.create([{ name: 'Groceries', deadline: DateTime.now }, { name: 'Christmas Gifts', deadline: DateTime.now }])
-user2.lists.create([{ name: 'School Supplies', deadline: DateTime.now }, { name: 'Gifts', deadline: DateTime.now }])
+list1 = List.create(name: 'Groceries', deadline: DateTime.now)
+list2 = List.create(name: 'Christmas Gifts', deadline: DateTime.now)
+list3 = List.create(name: 'School Supplies', deadline: DateTime.now)
+list4 = List.create(name: 'Fireworks', deadline: DateTime.now)
+user.lists << list1
+user.lists << list2
+user2.lists << list3
+user2.lists << list4
+
+list1.make_owner!(user)
+list2.make_owner!(user)
+list3.make_owner!(user2)
+list4.make_owner!(user2)
+
+
 Item.create(name: 'Avocados', info: 'From Mexico', user_id: user.id, list_id: user.lists[0].id)
 Item.create(name: 'Almonds', info: 'From California', user_id: user.id, list_id: user.lists[0].id)
 

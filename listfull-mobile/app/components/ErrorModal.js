@@ -5,9 +5,7 @@ import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-ic
 import Modal from 'react-native-modal';
 import PropTypes from 'prop-types';
 
-
 const ErrorModal = props => {
-	
 
 	return (
 		<Modal
@@ -17,9 +15,11 @@ const ErrorModal = props => {
 			swipeDirection="right"
 			animationOut='slideOutRight'
 			onSwipeComplete={props.close}
+			hideModalContentWhileAnimating = {true}
+
 		>
-			<View style = {styles.container}>
-				<View style = {styles.headerContainer}>
+			<View style = {errorStyles.container}>
+				<View style = {errorStyles.headerContainer}>
 						<TouchableOpacity onPress={props.close}>
 							<MaterialCommunityIcons name="window-close" size={32} color="gray"/>
 						</TouchableOpacity>
@@ -29,14 +29,12 @@ const ErrorModal = props => {
 							</Text>
 						</View>
 					</View>
-				<View style = {styles.bodyContainer}>
+				<View style = {errorStyles.body}>
 					<ErrorBox isError = {true} messages = {props.errMessage} />
 				</View>
 			</View>
 		</Modal>
 	);
-
-	
 }
 
 ErrorModal.propTypes = {
@@ -47,9 +45,7 @@ ErrorModal.propTypes = {
 	errMessage: PropTypes.array
 }
 
-export default ErrorModal;
-
-styles = StyleSheet.create({
+errorStyles = StyleSheet.create({
 	container: {
 		backgroundColor: 'white',
 		padding: 10, 
@@ -60,10 +56,12 @@ styles = StyleSheet.create({
 	headerContainer: {
 		alignItems: 'center'
 	},
-	bodyContainer: {
+	body: {
 		padding: 5,
 		alignItems: 'center',
+		justifyContent: 'center',
 	}
-	
-
 });
+
+export default ErrorModal;
+

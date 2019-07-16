@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { AsyncStorage } from 'react-native';
 import { decode_jwt } from '../utils/Decode.js';
 import axios from 'axios';
@@ -10,6 +10,7 @@ import AddList from './../components/AddList.js';
 import AddListForm from './../components/AddListForm.js';
 import Modal from 'react-native-modal';
 import ErrorModal from './../components/ErrorModal.js';
+import AddUserModal from './../components/AddUserModal.js';
 
 export default class DashBoardScreen extends React.Component {
 	state = {
@@ -21,15 +22,28 @@ export default class DashBoardScreen extends React.Component {
 		userLists: [],
 		isModalVisible: false,
 		newListName: '',
+		newListInfo: '',
+		newListDeadline: new Date(),
+		newListUsers: [],
 		canShowErr: false,
 		err: false,
 		errMessage: [],
-		newListDeadline: new Date(),
+		errHeader: '',
+		isAddUserModalVisible: false,
+		listToAddUser: {},
+		newUserEmail: '',
+		refreshing: false,
 	}
 
 	static navigationOptions = {
 		 title: "My Lists"
 	};
+
+	_onRefresh = async () => {
+		await this.setState({refreshing: true});
+		await this._getUserInfo();
+		this.setState({refreshing: false});
+	}
 
 	_retrieveData = async () => {
 	  try {
@@ -41,6 +55,8 @@ export default class DashBoardScreen extends React.Component {
 				 // Error retrieving data
 		}
 	}
+
+	//Go to list screen
 	_onPress = (listData) => {
 		console.log(listData)
 		this.props.navigation.navigate('ListView', {
@@ -62,20 +78,20 @@ export default class DashBoardScreen extends React.Component {
 
 	_postNewList = async () => {
 		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
-		const listData = { list: { name: this.state.newListName, deadline: this.state.newListDeadline.getTime() }};
+		const userEmails = this.state.newListUsers.map(user => user.email)
+		const listData = { list: { name: this.state.newListName, deadline: this.state.newListDeadline.getTime(), info: this.state.newListInfo, users: userEmails }};
 		try {
 			const {data} = await API.post('/api/v1/lists', listData, config);
 			this._addToMyLists(data);	
 		} catch(e) {
 			console.log(e.response.data.errors);
-			this.setState({err: true, errMessage: e.response.data.errors});
+			this.setState({err: true, errMessage: e.response.data.errors, errHeader: "Can't Add New List"});
 			console.log(this.state.err);
 		}
 	}
 
 	_deleteList = async (list) => {
 		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
-		console.log(list);
 		const listID = list.id;
 		try {
 			const {data} = await API.delete('/api/v1/lists/' + String(listID),config); 
@@ -85,9 +101,71 @@ export default class DashBoardScreen extends React.Component {
 		}
 	}
 
+	_patchNewUser = async () => {
+		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
+		const listID = this.state.listToAddUser.id; 
+		const userData = { user: {email: this.state.newUserEmail } }; 
+		try {
+			const {data} = await API.patch('/api/v1/lists/' + String(listID) + '/add_user',userData,config); 
+			return true;
+		} catch(e) {
+			this.setState({err: true, errMessage: e.response.data.errors, errHeader: "Can't Add User"});
+			return false;
+		}
+	}
+
+	_getUserPreview = async () => {
+		const config = { headers: {Authorization: "Bearer " + String(this.state.token)}};
+		const email = this.state.newUserEmail;
+		try {
+			const {data} = await API.get('/api/v1/users/preview/' + String(email),config); 
+			this.setState({newListUsers: [...this.state.newListUsers, { email: email, first_name: data.data.attributes.first_name, last_name: data.data.attributes.last_name }]});
+		} catch (e) {
+			console.log(e.response.data.errors);
+			this.setState({err: true, errMessage: e.response.data.errors});
+		}
+	}
+
+	_initiateAddUser = (list) => {
+		//TODO
+		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible, canShowErr: false, listToAddUser: list});
+	}
+
+	_addNewUser = async () => {
+		if ( await this._patchNewUser()) {
+			this.setState({newUserEmail: ''});
+		} else {
+			this._onCloseAddUserModal();
+		}
+	}
+
+	_userAlreadyPresent = () => {
+		const newEmail = this.state.newUserEmail;
+		const userEmail = this.state.userEmail;
+		const addedUsers = this.state.newListUsers;
+		for (let user in addedUsers) {
+			console.log(user);
+			if (addedUsers[user].email === newEmail || addedUsers[user].email === userEmail) {
+				console.log("hit");
+				return true;
+			}
+		}
+		return false;
+	}
+
+	_newListAddUser = () => {
+		this.setState({err: false, errMessage: []});
+		if (!this._userAlreadyPresent()) {
+			this._getUserPreview();
+		}
+		this.setState({newUserEmail: ''});
+
+//		console.log(this.state.newListUsers);
+	}
+
 	_deleteFromMyLists = (listID) => {
 		const newUserLists = this.state.userLists.filter(list => list.id !== listID); 
-		console.log(newUserLists);
+//		console.log(newUserLists);
 		this.setState({userLists: [...newUserLists]});
 	}
 
@@ -117,7 +195,8 @@ export default class DashBoardScreen extends React.Component {
 				ownerName: element["attributes"]["owner_name"],
 				creationDate: element["attributes"]["created-at"], 
 				lastUpdate: element["attributes"]["updated-at"], 
-				deadline: deadline.toLocaleDateString('en-US')  
+				deadline: deadline.toLocaleDateString('en-US'),  
+				info: element["attributes"]["info"],
 			}
 		});
 		console.log(lists);
@@ -132,6 +211,7 @@ export default class DashBoardScreen extends React.Component {
 			ownerID: data["data"]["attributes"]["owner_id"],
 			ownerName: data["data"]["attributes"]["owner_name"],
 			deadline: deadline.toLocaleDateString('en-US'), 
+			info: data["data"]["attributes"]["info"],
 
 		}
 		this.setState({userLists: [addedList, ...this.state.userLists]});
@@ -139,13 +219,31 @@ export default class DashBoardScreen extends React.Component {
 
 	_onCloseModal = () => {
 		this.setState({isModalVisible: !this.state.isModalVisible})
-		this.setState({newListName: '', newListDeadline: new Date()});
+		this.setState({newListName: '',newListInfo: '', newListDeadline: new Date(), newListUsers: []});
+	}
+
+	_onCloseAddUserModal = () => {
+		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible, newUserEmail: '', listToAddUser: {}})
+	}
+
+	_hideAddUserModal = () => {
+		this.setState({canShowErr: true});
 	}
 
 	_newListNameHandler = (name) => {
 		console.log(name);
 		this.setState({newListName: name});
 		console.log(this.state.newListName);
+	}
+
+	_newListInfoHandler = (info) => {
+		this.setState({newListInfo: info});
+		console.log(this.state.newListInfo);
+	}
+
+	_newUserEmailHandler = (email) => {
+		this.setState({newUserEmail: email});
+		console.log(this.state.newUserEmail);
 	}
 
 	_addNewList = () => {
@@ -167,7 +265,14 @@ export default class DashBoardScreen extends React.Component {
 		await this._getUserInfo();
 		await this.setState({showModal: false});
 	}
-				
+
+	//function used to make AddListForm modal scrollable
+	_handleScrollTo = p => {
+		if (this.scrollViewRef) {
+			this.scrollViewRef.scrollTo(p);
+		}
+	};
+
 	render() {
 		return (
 			<View style = {{flex: 1}}>
@@ -175,27 +280,61 @@ export default class DashBoardScreen extends React.Component {
 					<AddList userEmail={this.state.userEmail} newList={this._showNewListForm} viewImage={this._onPressProfileImage} />
 				</View>
 				<View style = {{flex: 7}}>
-					<TouchableList onPressDelete={this._deleteList} lists = {this.state.userLists} onPressRow = { this._onPress } />
+					<TouchableList 
+						onPressAddUser={this._initiateAddUser} 
+						onPressDelete={this._deleteList} 
+						lists = {this.state.userLists} 
+						onPressRow = { this._onPress } 
+						refreshing = { this.state.refreshing }
+						onRefresh = { this._onRefresh }
+					/>
 				</View>
 				<Modal 
 					isVisible={this.state.isModalVisible}
 	//					onBackdropPress={this._onCloseModal}
 					animationInTiming={1000}
 					animationOutTiming={300}
-					onSwipeComplete={this._onCloseModal}
-					swipeDirection="down"
 					animationOut='slideOutDown'
+//					swipeDirection="down"
 					hideModalContentWhileAnimating = {true}
 					onModalHide={() => this.setState({canShowErr: true})}
+					scrollTo={this._handleScrollTo}
+			    scrollOffset={this.state.scrollOffset}
+					scrollOffsetMax={400 - 300} // content height - ScrollView height
+					style={{marginTop: 20,marginBottom: 0, marginRight: 0, marginLeft: 0, justifyContent: 'flex-end'}}
 				>
-					<AddListForm newListName={this.state.newListName} closeModal={this._onCloseModal} newListNameHandler = {this._newListNameHandler} commitList = {this._addNewList} setDeadline={this._setDeadline} deadline={this.state.newListDeadline}/>
+					<AddListForm 
+						newListName={this.state.newListName} 
+						newListInfo={this.state.newListInfo}
+						closeModal={this._onCloseModal} 
+						newListNameHandler={this._newListNameHandler} 
+						newListInfoHandler={this._newListInfoHandler}
+						commitList={this._addNewList} 
+						setDeadline={this._setDeadline} 
+						deadline={this.state.newListDeadline}
+						addUserToList={this._newListAddUser}
+						userEmail={this.state.newUserEmail}
+						newUserEmailHandler={this._newUserEmailHandler}
+						newListUsers={this.state.newListUsers}
+						err={this.state.err}
+						errMessage={this.state.errMessage}
+					/>
 				</Modal>
 				<ErrorModal 
 					err = {this.state.err}
 					canShowErr = {this.state.canShowErr}
 					close = {this._closeErrorModal} 
-					headerMessage={"Can't Add New List"} 
+					headerMessage={this.state.errHeader} 
 					errMessage = {this.state.errMessage}
+				/>
+				<AddUserModal
+					show = {this.state.isAddUserModalVisible} 
+					close = {this._onCloseAddUserModal}
+					onHide = {this._hideAddUserModal}
+					commitUser = {this._addNewUser}
+					listName = {this.state.listToAddUser.name}
+					userEmailHandler = {this._newUserEmailHandler}
+					userEmail = {this.state.newUserEmail}
 				/>
 			</View>
 		);

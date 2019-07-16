@@ -7,8 +7,8 @@ FactoryBot.define do
         users_count {5}
       end
 
-      after(:create) do |user,evaluator|
-        list.users << create_user(:user, evaluator.user_count)
+      after(:create) do |list,evaluator|
+        list.users << create_list(:user, evaluator.users_count)
       end
     end
   end

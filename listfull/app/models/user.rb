@@ -13,6 +13,18 @@ class User < ApplicationRecord
   validates :last_name, presence: true
   validates_format_of :email, :with => /\A\S+@.+\.\S+\z/
 
+  def self.users_from_emails(user_emails)
+    return unless user_emails
+    users = []
+    user_emails.each do |email|
+      user = User.find_by(email: email)
+      if user
+        users << user
+      end
+    end
+    users
+  end
+
   def isActive?
     if (self.activation_state == "active")
       return true
@@ -21,13 +33,17 @@ class User < ApplicationRecord
     end
   end
 
+  def ownsList?(list)
+    self == list.owner 
+  end
+
   def canAccessList?(list)
     list.users.each do |user|
       if user.id == self.id
         return true
       end
-    return false
     end
+    return false
   end
 
   def owned_lists

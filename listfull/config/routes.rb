@@ -7,7 +7,12 @@ Rails.application.routes.draw do
       get 'me', to: 'users#show'
       post 'new_account', to: 'users#create'
 
+      get 'users/preview/:email', to: 'users#preview', constraints: { email: /[^\/]+/ } 
+
       resources :lists do
+        member do
+          patch :add_user
+        end
         resources :items
       end
     end

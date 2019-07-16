@@ -16,7 +16,7 @@ RSpec.describe "User Creation", :type => :request do
     let!(:new_user) { build_stubbed(:user) }
 
     it "does not create a new user" do
-      post url, params: { "user": { "email": new_user.email , "password": "password" , "password_confirmation": "password" , "first_name": new_user.first_name , "last_name": new_user.last_name }}
+      post url, params: { "user": { "email": user.email , "password": "password" , "password_confirmation": "password" , "first_name": new_user.first_name , "last_name": new_user.last_name }}
       expect(response).to have_http_status(422)
     end
   end

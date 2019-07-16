@@ -1,11 +1,10 @@
 FactoryBot.define do
   factory :user do
-    first_name { "John" }
-    last_name  { "Doe" }
-    email { "example@example.com" }
+    first_name { Faker::Name.first_name }
+    last_name  { Faker::Name.last_name }
+    email { Faker::Internet.email  }
     password { "password" }
     password_confirmation { "password" }
-    activation_state { "active" }
     
     factory :user_with_lists do
       transient do
@@ -18,6 +17,9 @@ FactoryBot.define do
           list.make_owner!(user)
         end
       end
+    end
+    after(:create) do |user|
+      user.activate!
     end
   end
 end

@@ -19,13 +19,20 @@ module Api::V1
       end
     end
 
+    def preview
+      user = User.find_by(email: params[:email])
+      if user
+        #might need to make the below more secure
+        render json: UserSerializer.new(user).serialized_json
+      else
+        render json: { errors:  [ :user => ["does not exist"] ] }, status: 404
+      end
+    end
+
     private
 
     def user_params
       params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name)
     end
-      
-
-
   end
 end
