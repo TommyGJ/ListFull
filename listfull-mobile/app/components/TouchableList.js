@@ -15,12 +15,19 @@ const Row = props => {
 	const onPressAddUser = () => {
 		props.onPressAddUser(props.item);
 	}
+	const convertToDate = (deadline) => {
+		let formattedDeadline = new Date(parseFloat(deadline));
+		let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+		return formattedDeadline.toLocaleDateString('en-US');
+
+
+	}
 	return(
 		<View style = {styles.row}>
 			<View style={styles.headers}>
 				<View style={styles.headerInfoSub}>
 					<Text style={{color: 'gray', fontSize: 12}}>
-					Deadline: {props.item.deadline}
+					Deadline: {convertToDate(props.item.deadline)}
 					</Text>
 				</View>
 				<View style={styles.headerInfoSub} >

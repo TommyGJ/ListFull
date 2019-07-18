@@ -1,18 +1,20 @@
-import React from 'react'
-import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button, Keyboard } from 'react-native'
-import  Constants  from 'expo-constants'
-import axios from 'axios'
-import API from './../utils/API.js'
+import React from 'react';
+import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button, Keyboard } from 'react-native';
+import { connect } from 'react-redux';
+import  Constants  from 'expo-constants';
+import API from './../utils/API.js';
 import * as SecureStore from 'expo-secure-store';
-import ErrorModal from '../components/ErrorModal.js'
+import ErrorModal from '../components/ErrorModal.js';
+
+import { logInUser } from './../redux/actions/user_actions.js'; 
+import { resetErrors } from './../redux/actions/error_actions.js'; 
 
 
-export default class LoginScreen extends React.Component {
+
+class LoginScreen extends React.Component {
 	state = {
 		email: 'example@example.com',
 		password: 'password',
-		err: false,
-		errMessage: [],
 	}
 
 	static navigationOptions = {
@@ -24,26 +26,22 @@ export default class LoginScreen extends React.Component {
 		console.log(this.state.email);
 	}
 
-	_handleLogin = async () => {
-		try {
-			const response = await API.post('/api/v1/authenticate', {
-				auth: { email: this.state.email, password: this.state.password }
-			})
-			console.log(response.data);
-			this._storeData(response.data);
-			this.props.navigation.navigate('App');
-
-		} catch(error) {
-			console.log(error.response.data.errors);
-			this.setState({err: true, errMessage: error.response.data.errors});
+	componentWillReceiveProps(nextProps) {
+		if (nextProps.token) {
+			console.log(nextProps.token);
+			this.props.navigation.navigate('App')
 		}
+	}
+	_handleLogin = async () => {
+		this.props.logInUser(this.state.email, this.state.password);
 	}
 
 	_closeError = () => {
-		this.setState({err: false});
+		this.props.resetErrors();
+		this.setState({email: '', password: ''});
 	}
 	componentDidMount() {
-		this.setState({err: false});
+		this.props.resetErrors();
 	}
 	_handlePassword = password => {
 		this.setState({password: password});
@@ -56,24 +54,16 @@ export default class LoginScreen extends React.Component {
 		return false;
 	}
 
-	_storeData = async (data) => {
-		try {
-			await SecureStore.setItemAsync('user_token', data.token);
-		} catch (error) {
-			console.log(error);
-		}
-	}
-
 	render() {
 		return (
 			<KeyboardAvoidingView behavior = "padding" style={styles.container}>
 				<View style = {styles.topContainer}>
 					<ErrorModal 
-						err={this.state.err}
+						err={this.props.err}
 						close={this._closeError}
 						canShowErr={true}
 						headerMessage={"Login Error!"}
-						errMessage = {this.state.errMessage}
+						errMessage = {this.props.errMessage}
 					/>
 					<TextInput 
 						style = {styles.text_box}
@@ -149,4 +139,18 @@ const styles = StyleSheet.create({
 			alignItems: 'center',
 		}
 });
+
+const mapStateToProps = state => ({
+	err: state.errors.err,
+	errMessage: state.errors.errMessage,
+	token: state.user.token,
+	user: state.user,
+});
+
+const actionCreators = {
+	logInUser,
+	resetErrors,
+}
+
+export default connect(mapStateToProps, actionCreators)(LoginScreen)
 

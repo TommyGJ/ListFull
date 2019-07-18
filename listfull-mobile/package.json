@@ -13,6 +13,7 @@
     "expo": "^33.0.0",
     "expo-constants": "^5.0.1",
     "expo-secure-store": "^5.0.1",
+    "json-api-normalizer": "^0.4.15",
     "jwt-decode": "^2.2.0",
     "prop-types": "^15.7.2",
     "react": "16.8.3",
@@ -27,6 +28,7 @@
     "redux": "^4.0.1",
     "redux-actions": "^2.6.5",
     "redux-logger": "^3.0.6",
+    "redux-object": "^0.5.10",
     "redux-thunk": "^2.3.0"
   },
   "devDependencies": {

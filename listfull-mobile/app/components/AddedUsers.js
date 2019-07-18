@@ -24,7 +24,7 @@ const AddedUsers = props => {
 				</View>
 				<View style = {addedUsersStyles.preview}>
 					<Text style = {{fontSize: 18}}>
-						{user.first_name + ' ' + user.last_name}
+						{user.firstName + ' ' + user.lastName}
 					</Text>
 				</View>
 				
