@@ -20,6 +20,7 @@ const AddUserForm = props => {
 	const submit = () => {
 		if (canSubmit()) {
 			props.commitUser(email);
+			setEmail('');
 		}
 	}
 

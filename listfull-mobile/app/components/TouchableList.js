@@ -15,6 +15,9 @@ const Row = props => {
 	const onPressAddUser = () => {
 		props.onPressAddUser(props.item);
 	}
+	const onPressInfo = () => {
+		props.onPressInfo(props.item);
+	}
 	const convertToDate = (deadline) => {
 		let formattedDeadline = new Date(parseFloat(deadline));
 		let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
@@ -54,6 +57,11 @@ const Row = props => {
 						<MaterialIcons name="person-add" size={30} color="gray"/>
 					</TouchableOpacity>
 				</View>
+				<View style={styles.subFooter}>
+					<TouchableOpacity onPress={onPressInfo}>
+						<MaterialIcons name="info" size={30} color="gray"/>
+					</TouchableOpacity>
+				</View>
 
 			</View>
 		</View>
@@ -78,6 +86,7 @@ const TouchableList = props => {
 				onPress = {props.onPressRow}
 				onPressDelete = {props.onPressDelete}
 				onPressAddUser = {props.onPressAddUser}
+				onPressInfo = {props.onPressInfo}
 			/>
 		);
 	};

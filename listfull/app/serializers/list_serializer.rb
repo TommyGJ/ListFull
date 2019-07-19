@@ -1,6 +1,6 @@
 class ListSerializer
   include FastJsonapi::ObjectSerializer
-  attributes :name
+  attributes :name, :info
 
   attribute :deadline do |object| 
     "#{object.deadline.to_f * 1000}"

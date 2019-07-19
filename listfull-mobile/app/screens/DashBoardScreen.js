@@ -13,12 +13,14 @@ import AddListForm from './../components/AddListForm.js';
 import Modal from 'react-native-modal';
 import ErrorModal from './../components/ErrorModal.js';
 import AddUserModal from './../components/AddUserModal.js';
+import InfoModal from './../components/InfoModal.js';
 
 class DashBoardScreen extends React.Component {
 	state = {
 		isModalVisible: false,
 		isAddUserModalVisible: false,
-		listToAddUser: {},
+		isInfoModalVisible: false,
+		toggledList: {},
 	}
 
 	static navigationOptions = {
@@ -59,7 +61,7 @@ class DashBoardScreen extends React.Component {
 	}
 
 	_patchNewUser = (email) => {
-		const listID = this.state.listToAddUser.id; 
+		const listID = this.state.toggledList.id; 
 		const userData = { user: {email: email } }; 
 		this.props.patchNewUser(this.props.token, listID, userData);
 	}
@@ -70,8 +72,12 @@ class DashBoardScreen extends React.Component {
 
 	_initiateAddUser = (list) => {
 		//TODO
-		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible, listToAddUser: list});
+		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible, toggledList: list});
 		this.props.enableShowErrors();
+	}
+
+	_initiateShowInfo = (list) => {
+		this.setState({isInfoModalVisible: !this.state.isInfoModalVisible, toggledList: list});
 	}
 
 	_addNewUser = (email) => {
@@ -79,18 +85,12 @@ class DashBoardScreen extends React.Component {
 		this._onCloseAddUserModal();
 	}
 
-	_userAlreadyPresent = () => {
-		const newEmail = email; 
+	_userAlreadyPresent = (email) => {
 		const userEmail = this.props.user.email;
-		if (newEmail === userEmail) {
-			return true;
-		}
+		if (email === userEmail) return true;
 		const addedUsers = this.props.userPreviews;
 		for (let user in addedUsers) {
-			if (addedUsers[user].email === newEmail) {
-				console.log("hit");
-				return true;
-			}
+			if (addedUsers[user].email === email) return true;
 		}
 		return false;
 	}
@@ -117,11 +117,13 @@ class DashBoardScreen extends React.Component {
 	}
 
 	_onCloseAddUserModal = () => {
-		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible,listToAddUser: {}})
+		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible,toggledList: {}})
 	}
 
-	_hideAddUserModal = () => {
-		this.props.enableShowErrors();
+	_onCloseInfoModal = () => {
+		this.setState({isInfoModalVisible: !this.state.isInfoModalVisible,toggledList: {}})
+
+
 	}
 
 	_addNewList = (name, info, deadline) => {
@@ -149,6 +151,7 @@ class DashBoardScreen extends React.Component {
 					<TouchableList 
 						onPressAddUser={this._initiateAddUser} 
 						onPressDelete={this._deleteList} 
+						onPressInfo = {this._initiateShowInfo}
 						lists = {this.props.lists} 
 						onPressRow = { this._onPress } 
 						getData = { this._getUserInfo }
@@ -177,7 +180,6 @@ class DashBoardScreen extends React.Component {
 						errMessage={this.props.errors.errMessage}
 					/>
 				</Modal>
-
 				<ErrorModal 
 					err = {this.props.errors.err}
 					canShowErr = {this.props.errors.canShowErr}
@@ -188,9 +190,16 @@ class DashBoardScreen extends React.Component {
 				<AddUserModal
 					show = {this.state.isAddUserModalVisible} 
 					close = {this._onCloseAddUserModal}
-					onHide = {this._hideAddUserModal}
+					onHide = {this.props.enableShowErrors}
 					commitUser = {this._addNewUser}
-					listName = {this.state.listToAddUser.name}
+					listName = {this.state.toggledList.name}
+				/>
+				<InfoModal 
+					show = {this.state.isInfoModalVisible}
+					close = {this._onCloseInfoModal}
+					hide = {this.props.enableShowErrors}
+					info = {this.state.toggledList.info}
+					name = {this.state.toggledList.name}
 				/>
 			</View>
 		);
