@@ -32,8 +32,6 @@ const AddUserModal = props => {
 			</View>
 			<AddUserForm 
 				commitUser = {props.commitUser} 
-				userEmail = {props.userEmail}
-				userEmailHandler = {props.userEmailHandler}
 			/>
 		</KeyboardAvoidingView>
 	</Modal>
@@ -48,8 +46,6 @@ AddUserModal.propTypes = {
 	onHide: PropTypes.func,
 	commitUser: PropTypes.func,
 	listName: PropTypes.string,
-	userEmail: PropTypes.string,
-	userEmailHandler: PropTypes.func,
 }
 styles = StyleSheet.create({
 	bottomModal: {

@@ -32,7 +32,7 @@ export const getUserPreview = (token, email) => async dispatch => {
 		const state = normalize(data);
 		dispatch({ type: Types.USER_PREVIEW_SUCCESS, payload: state });
 	} catch(error) {
-		dispatch({ type: Types.USER_PREVIEW_FAILURE });
+		dispatch({ type: Types.USER_PREVIEW_FAILURE, payload: error.response.data.errors });
 	}
 }
 

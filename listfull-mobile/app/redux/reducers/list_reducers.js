@@ -30,11 +30,9 @@ export const userListsReducer = (state = [], action) => {
 			];
 		case Types.ADD_LIST_SUCCESS:
 			const list = build(action.payload, 'list', null)[0];
-			//console.log("list build");
-			//console.log(list);
 			return [
-				...state,
-				listObj(list)
+				listObj(list),
+				...state
 			];
 		case Types.DELETE_LIST_SUCCESS:
 			return state.filter(element => element.id !== action.payload)

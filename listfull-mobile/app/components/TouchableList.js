@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState }  from 'react';
 import { StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import nameShortener from './../utils/NameShortener.js';
@@ -61,6 +61,16 @@ const Row = props => {
 }
 
 const TouchableList = props => {
+
+	const [refreshing,setRefreshing] = useState(false);
+
+	const onRefresh = async () => {
+		setRefreshing(true);
+		await props.getData();
+		setRefreshing(false);
+	}
+
+
 	const renderItem = ({item}) => {
 		return(
 			<Row 
@@ -80,8 +90,8 @@ const TouchableList = props => {
 			renderItem = {renderItem} 
 			data = {props.lists} 
 			keyExtractor={extractKeys} 
-			refreshing={props.refreshing}
-			onRefresh  = {props.onRefresh}
+			refreshing={refreshing}
+			onRefresh  = {onRefresh}
 		/>
 	);  
 }

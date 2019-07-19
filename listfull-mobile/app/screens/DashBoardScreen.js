@@ -17,13 +17,8 @@ import AddUserModal from './../components/AddUserModal.js';
 class DashBoardScreen extends React.Component {
 	state = {
 		isModalVisible: false,
-		newListName: '',
-		newListInfo: '',
-		newListDeadline: new Date(),
 		isAddUserModalVisible: false,
 		listToAddUser: {},
-		newUserEmail: '',
-		refreshing: false,
 	}
 
 	static navigationOptions = {
@@ -40,12 +35,6 @@ class DashBoardScreen extends React.Component {
 		}
 	}
 
-	_onRefresh = async () => {
-		await this.setState({refreshing: true});
-		await this._getUserInfo();
-		await this.setState({refreshing: false});
-	}
-
 	//Go to list screen
 	_onPress = (listData) => {
 		//console.log(listData)
@@ -58,9 +47,9 @@ class DashBoardScreen extends React.Component {
 		this.props.updateUser(this.props.token);
 	}
 
-	_postNewList = () => {
+	_postNewList = (name, info, deadline) => {
 		const userEmails = this.props.userPreviews.map(user => user.email)
-		const listData = { list: { name: this.state.newListName, deadline: this.state.newListDeadline.getTime(), info: this.state.newListInfo, users: userEmails }};
+		const listData = { list: { name: name, deadline: deadline.getTime(), info: info, users: userEmails }};
 		this.props.addNewList(this.props.token, listData);
 	}
 
@@ -69,14 +58,13 @@ class DashBoardScreen extends React.Component {
 		this.props.deleteList(this.props.token, listID);
 	}
 
-	_patchNewUser = async () => {
+	_patchNewUser = (email) => {
 		const listID = this.state.listToAddUser.id; 
-		const userData = { user: {email: this.state.newUserEmail } }; 
+		const userData = { user: {email: email } }; 
 		this.props.patchNewUser(this.props.token, listID, userData);
 	}
 
-	_getUserPreview = () => {
-		const email = this.state.newUserEmail;
+	_getUserPreview = (email) => {
 		this.props.getUserPreview(this.props.token, email);
 	}
 
@@ -86,13 +74,13 @@ class DashBoardScreen extends React.Component {
 		this.props.enableShowErrors();
 	}
 
-	_addNewUser = async () => {
-		this._patchNewUser();
+	_addNewUser = (email) => {
+		this._patchNewUser(email);
 		this._onCloseAddUserModal();
 	}
 
 	_userAlreadyPresent = () => {
-		const newEmail = this.state.newUserEmail;
+		const newEmail = email; 
 		const userEmail = this.props.user.email;
 		if (newEmail === userEmail) {
 			return true;
@@ -107,21 +95,15 @@ class DashBoardScreen extends React.Component {
 		return false;
 	}
 
-	_newListAddUser = () => {
-		//this.setState({err: false, errMessage: []});
-		if (!this._userAlreadyPresent()) {
-			this._getUserPreview();
+	_newListAddUser = (email) => {
+		if (!this._userAlreadyPresent(email)) {
+			this._getUserPreview(email);
 		}
-		this.setState({newUserEmail: ''});
-
 	}
 
 	_showNewListForm = () => {
-			this.props.disableShowErrors
-			this.setState({isModalVisible: !this.state.isModalVisible},() => {
-			console.log("showModal state = ");
-//			console.log(this.state.isModalVisible);
-		});
+			this.props.disableShowErrors();
+			this.setState({isModalVisible: !this.state.isModalVisible});
 	}
 
 	_onPressProfileImage = () => {
@@ -131,42 +113,20 @@ class DashBoardScreen extends React.Component {
 
 	_onCloseModal = () => {
 		this.setState({isModalVisible: !this.state.isModalVisible})
-		this.setState({newListName: '',newListInfo: '', newListDeadline: new Date(),});
 		this.props.resetUserPreviews();
 	}
 
 	_onCloseAddUserModal = () => {
-		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible, newUserEmail: '', listToAddUser: {}})
+		this.setState({isAddUserModalVisible: !this.state.isAddUserModalVisible,listToAddUser: {}})
 	}
 
 	_hideAddUserModal = () => {
 		this.props.enableShowErrors();
 	}
 
-	_newListNameHandler = (name) => {
-//		console.log(name);
-		this.setState({newListName: name});
-		console.log(this.state.newListName);
-	}
-
-	_newListInfoHandler = (info) => {
-		this.setState({newListInfo: info});
-//		console.log(this.state.newListInfo);
-	}
-
-	_newUserEmailHandler = (email) => {
-		this.setState({newUserEmail: email});
-//		console.log(this.state.newUserEmail);
-	}
-
-	_addNewList = () => {
-		this._postNewList();
+	_addNewList = (name, info, deadline) => {
+		this._postNewList(name, info, deadline);
 		this._onCloseModal();
-	}
-
-	_setDeadline = (newDeadline) => {
-		this.setState({newListDeadline: newDeadline}, () =>
-			console.log(this.state.newListDeadline.toLocaleDateString()));
 	}
 
 	_closeErrorModal = () => {
@@ -191,8 +151,7 @@ class DashBoardScreen extends React.Component {
 						onPressDelete={this._deleteList} 
 						lists = {this.props.lists} 
 						onPressRow = { this._onPress } 
-						refreshing = { this.state.refreshing }
-						onRefresh = { this._onRefresh }
+						getData = { this._getUserInfo }
 					/>
 				</View>
 				<Modal 
@@ -210,20 +169,12 @@ class DashBoardScreen extends React.Component {
 					style={{marginTop: 20,marginBottom: 0, marginRight: 0, marginLeft: 0, justifyContent: 'flex-end'}}
 				>
 					<AddListForm 
-						newListName={this.state.newListName} 
-						newListInfo={this.state.newListInfo}
 						closeModal={this._onCloseModal} 
-						newListNameHandler={this._newListNameHandler} 
-						newListInfoHandler={this._newListInfoHandler}
 						commitList={this._addNewList} 
-						setDeadline={this._setDeadline} 
-						deadline={this.state.newListDeadline}
 						addUserToList={this._newListAddUser}
-						userEmail={this.state.newUserEmail}
-						newUserEmailHandler={this._newUserEmailHandler}
 						newListUsers={this.props.userPreviews}
-						err={this.props.err}
-						errMessage={this.props.errMessage}
+						err={this.props.errors.err}
+						errMessage={this.props.errors.errMessage}
 					/>
 				</Modal>
 
@@ -240,8 +191,6 @@ class DashBoardScreen extends React.Component {
 					onHide = {this._hideAddUserModal}
 					commitUser = {this._addNewUser}
 					listName = {this.state.listToAddUser.name}
-					userEmailHandler = {this._newUserEmailHandler}
-					userEmail = {this.state.newUserEmail}
 				/>
 			</View>
 		);

@@ -1,20 +1,25 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, TextInput, KeyboardAvoidingView } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import PropTypes from 'prop-types';
 
 const AddUserForm = props => {
 
+	const [email, setEmail] = useState('');
+
 	const canSubmit = () => {
-		if (props.userEmail.length > 0) {
+		if (email.length > 0) {
 			return true;
 		} else {
 			return false;
 		}
 	}
+	const handleEmail = newEmail => {
+		setEmail(newEmail);
+	}
 	const submit = () => {
 		if (canSubmit()) {
-			props.commitUser();
+			props.commitUser(email);
 		}
 	}
 
@@ -23,9 +28,9 @@ const AddUserForm = props => {
 			<View style = {formStyles.inputContainer}> 
 				<TextInput
 					style = {formStyles.text_box}
-					value = {props.userEmail}
+					value = {email}
 					placeholder = "Email"
-					onChangeText = {props.userEmailHandler}
+					onChangeText = {handleEmail}
 					keyboardType = 'email-address'
 				/>
 			</View>
@@ -36,14 +41,10 @@ const AddUserForm = props => {
 			</View>
 		</View>
 	);
-
-
 }
 
 AddUserForm.propTypes = {
 	commitUser: PropTypes.func,
-	userEmail: PropTypes.string,
-	userEmailHandler: PropTypes.func,
 }
 
 formStyles = StyleSheet.create({

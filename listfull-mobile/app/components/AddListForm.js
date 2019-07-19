@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState, useEffect } from 'react';
 import { DatePickerIOS, View, Text, TextInput, KeyboardAvoidingView, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import Modal from 'react-native-modal';
@@ -9,6 +9,30 @@ import ErrorBox from './ErrorBox.js';
  
 
 const AddListForm = props => {
+	const [newListName, setNewListName] = useState('');
+	const [newListInfo, setNewListInfo] = useState('');
+	const [deadline, setDeadline] = useState(new Date()); 
+
+	const newListNameHandler = name => {
+		setNewListName(name);
+	}
+
+	const deadlineHandler = newDeadline => {
+		setDeadline(newDeadline);
+	}
+
+	const newListInfoHandler = info => {
+		setNewListInfo(info);
+	}
+
+	const userEmailHandler = email => {
+		setUserEmail(email);
+	}
+
+	const onPressSubmit = () => {
+		props.commitList(newListName, newListInfo, deadline) 
+	}
+
 	return (
 		<View style = {styles.container}>
 			<View style = {styles.topContainer}>
@@ -19,7 +43,7 @@ const AddListForm = props => {
 						</TouchableOpacity>
 					</View>
 					<View style = {{flex: 1, alignItems: 'flex-end'}}>
-						<TouchableOpacity onPress={props.commitList}>
+						<TouchableOpacity onPress={onPressSubmit}>
 							<MaterialIcons name="add" size={35} color="gray"/>
 						</TouchableOpacity>
 					</View>
@@ -38,9 +62,9 @@ const AddListForm = props => {
 					<View style = {styles.bodyChildrenContainer}>
 						<TextInput
 							style = {styles.text_box}
-							value = {props.newListName}
+							value = {newListName}
 							placeholder = "New List Name"
-							onChangeText = {props.newListNameHandler}
+							onChangeText = {newListNameHandler}
 						/>
 					</View>
 					<View style = {styles.deadlineContainer}>
@@ -48,8 +72,8 @@ const AddListForm = props => {
 							List Deadline
 						</Text>
 						<DatePickerIOS
-							date={props.deadline}
-							onDateChange={props.setDeadline}
+							date={deadline}
+							onDateChange={deadlineHandler}
 							mode={'date'}
 						/>
 					</View>
@@ -60,8 +84,8 @@ const AddListForm = props => {
 						<TextInput
 							placeholder="Add any additional information here!"
 							maxLength={100}
-							value={props.newListInfo}
-							onChangeText={props.newListInfoHandler}
+							value={newListInfo}
+							onChangeText={newListInfoHandler}
 							multiline={true}
 							style={styles.infoBox}
 						/>
@@ -75,8 +99,6 @@ const AddListForm = props => {
 						<ErrorBox isError={props.err} messages={props.errMessage}/>
 						<AddUserForm
 							commitUser={props.addUserToList}
-							userEmail={props.userEmail}
-							userEmailHandler={props.newUserEmailHandler}
 						/>
 					</View>
 				</KeyboardAwareScrollView>
