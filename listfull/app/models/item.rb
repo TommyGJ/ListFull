@@ -1,12 +1,14 @@
 class Item < ApplicationRecord
   belongs_to :user
   belongs_to :list
+  validates :name, presence: true, length: { maximum: 20 }
+  validates :info, length: { maximum: 100 }
 
   def owner_name_and_id
     owner = {}
     id = self.user_id
-    name = User.find(user_id).first_name + ' ' + User.find(user_id).last_name
-    owner = {id: id, name: name}
+    name = User.find(id).first_name + ' ' + User.find(id).last_name
+    owner = { id: id, name: name }
   end
 
   def toggle_complete
