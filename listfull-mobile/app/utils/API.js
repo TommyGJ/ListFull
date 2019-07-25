@@ -31,6 +31,22 @@ export const HTTPGetUserPreview = (token, email) => {
 	return API.get('/api/v1/users/preview/' + String(email),config(token)); 
 }
 
+export const HTTPGetListItems = (token, listID) => {
+	return API.get('/api/v1/lists/' + String(listID), config(token))
+}
+
+export const HTTPPatchItem = (token, itemID, url) => {
+	return API.patch('/api/v1/items/' + String(itemID) + url,null, config(token))
+}
+
+export const HTTPPostItem = (token, itemData) => {
+	return API.post('/api/v1/items/', itemData, config(token))
+}
+
+export const HTTPCreateAccount = (data) => {
+	return API.post('/api/v1/new_account', data)
+}
+
 /*
  * Helper Functions
 */

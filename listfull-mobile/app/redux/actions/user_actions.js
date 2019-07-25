@@ -1,4 +1,4 @@
-import { login, getUser, HTTPGetUserPreview } from './../../utils/API.js';
+import { login, getUser, HTTPGetUserPreview, HTTPCreateAccount } from './../../utils/API.js';
 import * as Types from './../constants/types.js';
 import normalize from 'json-api-normalizer';
 import build from 'redux-object';
@@ -39,4 +39,18 @@ export const getUserPreview = (token, email) => async dispatch => {
 export const resetUserPreviews = () => ({
 	type: Types.RESET_USER_PREVIEWS
 })
+
+export const createAccount = (userData) => async dispatch => {
+	dispatch({type: Types.CREATE_ACCOUNT_STARTED});
+	try {
+		const {data} = await HTTPCreateAccount(userData);
+		dispatch({ type: Types.CREATE_ACCOUNT_SUCCESS});
+	} catch(error) {
+		dispatch({ type: Types.CREATE_ACCOUNT_FAILURE, payload: error.response.data.errors });
+	}
+}
+
+export const resetCreationToken = () => ({
+	type: Types.RESET_CREATION_TOKEN,
+});
 

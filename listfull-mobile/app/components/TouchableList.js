@@ -2,6 +2,8 @@ import React, { useState }  from 'react';
 import { StyleSheet, Text, View, Button, FlatList, Image, TouchableOpacity } from 'react-native';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 import nameShortener from './../utils/NameShortener.js';
+import { dateFormatter } from './../utils/DateFormatter.js';
+
 
 const Row = props => {
 	const onPress = () => {
@@ -18,19 +20,13 @@ const Row = props => {
 	const onPressInfo = () => {
 		props.onPressInfo(props.item);
 	}
-	const convertToDate = (deadline) => {
-		let formattedDeadline = new Date(parseFloat(deadline));
-		let options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-		return formattedDeadline.toLocaleDateString('en-US');
 
-
-	}
 	return(
 		<View style = {styles.row}>
 			<View style={styles.headers}>
 				<View style={styles.headerInfoSub}>
 					<Text style={{color: 'gray', fontSize: 12}}>
-					Deadline: {convertToDate(props.item.deadline)}
+					Deadline: {dateFormatter(props.item.deadline, false)}
 					</Text>
 				</View>
 				<View style={styles.headerInfoSub} >

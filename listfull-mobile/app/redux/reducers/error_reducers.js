@@ -31,6 +31,13 @@ export const errorReducer = (state = {}, action) => {
 				errMessage: [...action.payload],
 				errHeader: "Can't Get User Preview!",
 			}
+		case Types.CREATE_ACCOUNT_FAILURE:
+			return {
+				...state,
+				err: true,
+				errMessage: [...action.payload],
+				errHeader:"New Account Error!", 
+			}
 		case Types.RESET_ERRORS: 
 			return {
 				...state,

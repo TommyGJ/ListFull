@@ -22,6 +22,16 @@ export const userReducer = (state = initialUserState, action) => {
 				lastName: user.lastName,
 				id: user.id,
 			};
+		case Types.CREATE_ACCOUNT_SUCCESS:
+			return {
+				...state,
+				creation_token: "Account Created Successfully",
+			}
+		case Types.RESET_CREATION_TOKEN:
+			return {
+				...state,
+				creation_token: '',
+			}
 		default:
 			return state;
 	}
@@ -42,6 +52,32 @@ export const userPreviewReducer = (state = [], action) => {
 		case Types.RESET_USER_PREVIEWS: 
 			return []
 		default:
+			return state
+	}
+}
+
+const mapUsers = (users) => {
+	return(user.map(user => ({
+			id: user.id,
+			firstName: user.firstName,
+			lastName: user.lastName,
+			email: user.email,
+		})
+	));
+}
+
+export const listUsersReducer = (state = [], action) => {
+	switch(action.type) {
+		case Types.VIEW_LIST_SUCCESS:
+			const users = build(action.payload, 'user', null);
+			if (!users) return [];
+			const usersArray = mapUsers(users);
+			return [
+				...usersArray,
+			];
+		case Types.RESET_VIEW_LIST: 
+			return [];
+		default: 
 			return state
 	}
 }

@@ -1,26 +1,38 @@
 import React from 'react';
 import { View, Text, StyleSheet, KeyboardAvoidingView, TextInput, Button, Keyboard } from 'react-native'
+import { connect } from 'react-redux';
 import  Constants  from 'expo-constants'
 import axios from 'axios'
 import API from './../utils/API.js'
 import {AsyncStorage} from 'react-native';
 import ErrorModal from '../components/ErrorModal.js'
+import { resetErrors } from './../redux/actions/error_actions.js';
+import { createAccount, resetCreationToken } from './../redux/actions/user_actions.js';
 
 
-export default class SignUpScreen extends React.Component {
+
+class SignUpScreen extends React.Component {
 	state = {
 		email: 'tommy.johnson@yale.edu',
 		password: 'password',
 		firstName: 'Tommy',
 		lastName: 'Johnson',
 		password_confirmation: 'password',
-		err: false,
-		errMessage: [],
 	};
 
 	static navigationOptions = {
 		 title: "New Account"
 	};
+
+	componentWillReceiveProps(nextProps) {
+		if(nextProps.creation_token) {
+			this.props.navigation.navigate('AuthLoading');
+		}
+	}
+
+	componentWillUnmount() {
+		this.props.resetCreationToken();
+	}
 
 	_handleButton = () => {
 		if (this.state.password === '' || this.state.email === '' || this.state.firstName === '' || this.state.lastName === '' || this.state.password_confirmation === '') {
@@ -29,33 +41,21 @@ export default class SignUpScreen extends React.Component {
 		return false;
 	}
 
-	_isValidEmail = () => {
-		let re = /\S+@\S+\.\S+/;
-		return re.test(this.state.email);
-	}
-
 	_closeError = () => {
-		this.setState({err: false});
+		this.props.resetErrors();
 	}
 
-	_createAccount = async () => {
-		try {
-			const response = await API.post('/api/v1/new_account', {
-				user: {
-					email: this.state.email,
-					password: this.state.password,
-					password_confirmation: this.state.password_confirmation,
-					first_name: this.state.firstName,
-					last_name: this.state.lastName
-				}
-			});
-			console.log(response.data);
-			this.props.navigation.navigate('AuthLoading');
-		} catch (e) {
-			console.log(e.response.data)
-			this.setState({err: true, errMessage: e.response.data["errors"]});
-
-		}
+	_createAccount = () => {
+		const newUserData = {
+			user: {
+				email: this.state.email,
+				password: this.state.password,
+				password_confirmation: this.state.password_confirmation,
+				first_name: this.state.firstName,
+				last_name: this.state.lastName
+			}
+		};
+		this.props.createAccount(newUserData);
 	}
 
 	render() {
@@ -63,11 +63,11 @@ export default class SignUpScreen extends React.Component {
 			<KeyboardAvoidingView behavior = "padding" style={styles.container}>
 				<View style = {styles.topContainer}>
 					<ErrorModal 
-						err={this.state.err}
+						err={this.props.err}
 						close={this._closeError}
 						canShowErr={true}
-						headerMessage={"New Account Error!"}
-						errMessage = {this.state.errMessage}
+						headerMessage={this.props.errHeader}
+						errMessage = {this.props.errMessage}
 					/>
 					<TextInput 
 						style = {styles.text_box}
@@ -157,4 +157,20 @@ const styles = StyleSheet.create({
 			alignItems: 'center',
 		}
 });
+
+const mapStateToProps = state => ({
+	err: state.errors.err,
+	errMessage: state.errors.errMessage,
+	errHeader: state.errors.errHeader,
+	creation_token: state.user.creation_token,
+});
+
+const actionCreators = {
+	resetErrors,
+	createAccount,
+	resetCreationToken,
+}
+
+export default connect(mapStateToProps, actionCreators)(SignUpScreen)
+
 

@@ -17,6 +17,7 @@ const listObj = (list) => ({
 		info: list.info,
 		deadline: list.deadline,
 });
+
 export const userListsReducer = (state = [], action) => {
 	switch(action.type) {
 		case Types.USER_UPDATE_SUCCESS:
@@ -37,6 +38,25 @@ export const userListsReducer = (state = [], action) => {
 		case Types.DELETE_LIST_SUCCESS:
 			return state.filter(element => element.id !== action.payload)
 		default:
+			return state
+	}
+}
+
+export const viewListReducer = (state = {}, action) => {
+	switch(action.type) {
+		case Types.VIEW_LIST_SUCCESS: 
+			const list = build(action.payload, 'list', null)[0] 
+			return {
+				id: list.id,
+				name: list.name,
+				deadline: list.deadline,
+				info: list.info,
+				ownerID: list.ownerId,
+				ownerName: list.ownerName,
+			}
+		case Types.RESET_VIEW_LIST:
+			return {};
+		default: 
 			return state
 	}
 }

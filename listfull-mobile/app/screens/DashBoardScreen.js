@@ -1,7 +1,7 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { updateUser, getUserPreview, resetUserPreviews } from './../redux/actions/user_actions.js';
-import { addNewList, deleteList, patchNewUser } from './../redux/actions/list_actions.js';
+import { addNewList, deleteList, patchNewUser, viewList } from './../redux/actions/list_actions.js';
 import { resetErrors, enableShowErrors, disableShowErrors } from './../redux/actions/error_actions.js';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
 import { decode_jwt } from '../utils/Decode.js';
@@ -31,16 +31,12 @@ class DashBoardScreen extends React.Component {
 		this._getUserInfo();
 	}
 
-	componentWillReceiveProps(nextProps) {
-		if (nextProps.lists) {
-			console.log(nextProps.lists)
-		}
-	}
 
 	//Go to list screen
 	_onPress = (listData) => {
-		//console.log(listData)
-		this.props.navigation.navigate('ListView', {
+		console.log(listData);
+		this.props.viewList(this.props.token, listData.id);
+		this.props.navigation.navigate('ListView',{
 			list: listData,
 		});
 	}
@@ -223,6 +219,7 @@ const actionCreators = {
 	patchNewUser,
 	getUserPreview,
 	resetUserPreviews,
+	viewList,
 }
 
 export default connect(mapStateToProps,actionCreators)(DashBoardScreen);

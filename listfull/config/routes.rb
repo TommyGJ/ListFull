@@ -13,7 +13,14 @@ Rails.application.routes.draw do
         member do
           patch :add_user
         end
-        resources :items
+      end
+
+      resources :items do
+        member do
+          patch :toggle_complete
+          patch :toggle_priority
+        end
+        
       end
     end
   end

@@ -1,4 +1,4 @@
-import { postNewList, HTTPDeleteList, HTTPPatchList } from './../../utils/API.js';
+import { postNewList, HTTPDeleteList, HTTPPatchList, HTTPGetListItems } from './../../utils/API.js';
 import * as Types from './../constants/types.js';
 import normalize from 'json-api-normalizer';
 import build from 'redux-object';
@@ -31,8 +31,21 @@ export const patchNewUser = (token, listID, userData) => async dispatch => {
 		dispatch({type: Types.PATCH_NEW_USER_SUCCESS});
 	} catch(error) {
 		dispatch({ type: Types.PATCH_NEW_USER_FAILURE, payload: error.response.data.errors});
-
-
 	}
 }
+
+export const viewList = (token, listID) => async dispatch => {
+	dispatch({type: Types.VIEW_LIST_STARTED});
+	try {
+		const {data} = await HTTPGetListItems(token, listID);
+		state = normalize(data)
+		dispatch({type: Types.VIEW_LIST_SUCCESS, payload: state}); 
+	} catch(error) {
+		dispatch({type: Types.VIEW_LIST_FAILURE});
+	}
+}
+
+export const resetViewList = () => ({
+	type: Types.RESET_VIEW_LIST,
+});
 
