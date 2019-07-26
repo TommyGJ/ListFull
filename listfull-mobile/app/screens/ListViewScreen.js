@@ -2,12 +2,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { resetViewList, viewList } from './../redux/actions/list_actions.js';
 import { toggle, toggleItem, unToggleItem } from './../redux/actions/item_actions.js';
+import { resetErrors } from './../redux/actions/error_actions.js';
 import { View, Text, Button } from 'react-native';
 import axios from 'axios';
 import API from './../utils/API.js';
 import AddList from './../components/AddList.js';
 import ItemsList from './../components/ItemsList.js';
 import PressItemModal from './../components/PressItemModal.js';
+import ErrorModal from './../components/ErrorModal.js';
 
 class ListViewScreen extends React.Component {
 	state = {
@@ -57,12 +59,14 @@ class ListViewScreen extends React.Component {
 	}
 
 	_toggle = (url) => {
+
 		this.props.toggle(this.props.token, this.props.toggledItem.id, url)
 	}
 
 	_hideItemModal = () => {
 		console.log("todo");
 	}
+
 	
 	render() {
 		return (
@@ -82,7 +86,13 @@ class ListViewScreen extends React.Component {
 					user = {this.props.owner}
 					item = {this.props.toggledItem}
 					toggle = {this._toggle}
-
+				/>
+				<ErrorModal 
+					err = {this.props.errors.err}
+					canShowErr = {true}
+					close = {() => this.props.resetErrors()} 
+					headerMessage={this.props.errors.errHeader} 
+					errMessage = {this.props.errors.errMessage}
 				/>
 			</View>
 		);
@@ -96,10 +106,12 @@ const mapStateToProps = state => ({
 	items: state.items,
 	owner: state.user.id,
 	toggledItem: state.toggledItem,
+	errors: state.errors,
 })
 
 const actionCreators = {
 	resetViewList,
+	resetErrors,
 	viewList,
 	toggle,
 	toggleItem,

@@ -1,4 +1,4 @@
-import { HTTPPostItem } from './../../utils/API.js';
+import { HTTPPostItem, HTTPPatchItem } from './../../utils/API.js';
 import * as Types from './../constants/types.js';
 import normalize from 'json-api-normalizer';
 import build from 'redux-object';
@@ -14,11 +14,12 @@ export const postNewItem = (token, itemData) => async dispatch => {
 		const state = normalize(data)
 		dispatch({type: Types.POST_ITEM_SUCCESS, payload: state});
 	} catch(error) {
-		dispatch({type: Types.POST_ITEM_FAILURE});
+		dispatch({type: Types.POST_ITEM_FAILURE, payload: error.response.data.errors });
 	}
 }
 
 export const toggle = (token, itemID, url_ext) => async dispatch => {
+	console.log("here");
 	dispatch({type: Types.TOGGLE_STARTED});
 	try {
 		const {data} = await HTTPPatchItem(token, itemID, url_ext)  
