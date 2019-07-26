@@ -1,6 +1,8 @@
 require "rails_helper"
 
 RSpec.describe "Get User Lists", :type => :request do
+  include APIHelper
+
   url = 'https://localhost:3000/api/v1/me'
   let!(:user) { create(:user_with_lists, lists_count: 5 ) }
   before { @token = JsonWebToken.encode( sub: user.id, email: user.email )} 
