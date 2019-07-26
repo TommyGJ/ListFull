@@ -1,4 +1,4 @@
-import { HTTPPostItem, HTTPPatchItem } from './../../utils/API.js';
+import { HTTPPostItem, HTTPPatchItem, HTTPDeleteItem } from './../../utils/API.js';
 import * as Types from './../constants/types.js';
 import normalize from 'json-api-normalizer';
 import build from 'redux-object';
@@ -6,6 +6,16 @@ import build from 'redux-object';
 export const resetItems = () => ({
 	type: Types.RESET_ITEMS
 });
+
+export const deleteItem = (token, itemID) => async dispatch => {
+	dispatch({type: Types.DELETE_ITEM_STARTED});
+	try {
+		await HTTPDeleteItem(token, itemID);  
+		dispatch({type: Types.DELETE_ITEM_SUCCESS, payload: itemID});
+	} catch(error) {
+		dispatch({type: Types.DELETE_ITEM_FAILURE, payload: error.response.data.errors });
+	}
+}
 
 export const postNewItem = (token, itemData) => async dispatch => {
 	dispatch({type: Types.POST_ITEM_STARTED});

@@ -47,6 +47,12 @@ export const HTTPCreateAccount = (data) => {
 	return API.post('/api/v1/new_account', data)
 }
 
+export const HTTPDeleteItem = (token, itemID) => {
+	console.log('here');
+	return API.delete('/api/v1/items/' + String(itemID),config(token))
+}
+
+
 /*
  * Helper Functions
 */

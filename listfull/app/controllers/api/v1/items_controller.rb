@@ -5,7 +5,7 @@ module Api::V1
     def toggle_complete
       @item = Item.find(params[:id])
       if !@item
-        render json: { errors: [ :list => ["Can not be found" ]]}, status: 404 
+        render json: { errors: [ :bullet => ["Can not be found" ]]}, status: 404 
       else
         @item.toggle_complete
         item_json
@@ -15,7 +15,7 @@ module Api::V1
     def toggle_priority
       @item = Item.find(params[:id])
       if !@item
-        render json: { errors: [ :list => ["Can not be found" ]]}, status: 404 
+        render json: { errors: [ :bullet => ["Can not be found" ]]}, status: 404 
       else
         @item.toggle_priority
         item_json
@@ -29,6 +29,17 @@ module Api::V1
       else
         render json: { errors: [@item.errors.messages] }, status: 422 
       end
+    end
+
+    def destroy
+      @item = Item.find(params[:id])
+      if @item.remove(@current_user)
+        #TODO
+      else
+        render json: { errors: [ :bullet => ["can only be removed by its creator or the list's creator" ]]}, status: 403 
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [ :bullet => ["does not exist" ]]}, status: 404 
     end
 
     private 

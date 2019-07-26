@@ -1,8 +1,8 @@
 import React from 'react';
 import { connect } from 'react-redux';
 import { resetViewList, viewList } from './../redux/actions/list_actions.js';
-import { toggle, toggleItem, unToggleItem } from './../redux/actions/item_actions.js';
-import { resetErrors } from './../redux/actions/error_actions.js';
+import { toggle, toggleItem, unToggleItem, deleteItem } from './../redux/actions/item_actions.js';
+import { resetErrors, enableShowErrors } from './../redux/actions/error_actions.js';
 import { View, Text, Button } from 'react-native';
 import axios from 'axios';
 import API from './../utils/API.js';
@@ -58,16 +58,21 @@ class ListViewScreen extends React.Component {
 		this._toggleItemModal();
 	}
 
-	_toggle = (url) => {
+	_deleteItem = () => {
+		console.log("delete this item");
+		console.log(this.props.toggledItem.id);
+		this.props.deleteItem(this.props.token, this.props.toggledItem.id);
+		this._closeItemModal();
+	}
 
+	_toggle = (url) => {
 		this.props.toggle(this.props.token, this.props.toggledItem.id, url)
 	}
 
 	_hideItemModal = () => {
-		console.log("todo");
+		this.props.enableShowErrors();
 	}
 
-	
 	render() {
 		return (
 			<View style = {{flex: 1}}>
@@ -86,10 +91,11 @@ class ListViewScreen extends React.Component {
 					user = {this.props.owner}
 					item = {this.props.toggledItem}
 					toggle = {this._toggle}
+					del = {this._deleteItem}
 				/>
 				<ErrorModal 
 					err = {this.props.errors.err}
-					canShowErr = {true}
+					canShowErr = {this.props.errors.canShowErr}
 					close = {() => this.props.resetErrors()} 
 					headerMessage={this.props.errors.errHeader} 
 					errMessage = {this.props.errors.errMessage}
@@ -116,6 +122,8 @@ const actionCreators = {
 	toggle,
 	toggleItem,
 	unToggleItem,
+	deleteItem,
+	enableShowErrors
 }
 
 export default connect(mapStateToProps, actionCreators)(ListViewScreen);   

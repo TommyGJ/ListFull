@@ -17,6 +17,7 @@ const PressItemModal = props => {
 		onBackdropPress={props.close}
 		onSwipeComplete={props.close}
 		swipeDirection='down'
+		animationIn = 'slideInUp'
 		animationOut='slideOutDown'
 		onModalHide={props.onHide}
 		hideModalContentWhileAnimating = {true}
@@ -53,7 +54,7 @@ const PressItemModal = props => {
 							adjustsFontSizeToFit = {true} 
 							numberOfLines = {3}
 						>
-							{props.item.info + "This is a test to see how well this works when the the text must get smaller. I hope this goes over three lines. Remeber to get some avocados from Mexico :)"}
+							{props.item.info}
 						</Text>
 					</View>
 				</View>
@@ -87,7 +88,7 @@ const PressItemModal = props => {
 				</View>
 
 				<View style = {itemModalStyles.outerBox}> 
-					<TouchableOpacity style = {{justifyContent: 'center', alignItems: 'center'}}>
+					<TouchableOpacity onPress = {props.del} style = {{justifyContent: 'center', alignItems: 'center'}}>
 
 						<MaterialIcons name="delete" size={40} color="lightcoral"/>
 						<Text 
@@ -112,6 +113,7 @@ PressItemModal.propTypes = {
 	item: PropTypes.object,
 	user: PropTypes.string,
 	toggle: PropTypes.func,
+	del: PropTypes.func,
 }
 
 itemModalStyles = StyleSheet.create({

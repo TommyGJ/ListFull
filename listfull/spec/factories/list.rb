@@ -11,5 +11,13 @@ FactoryBot.define do
         list.users << create_list(:user, evaluator.users_count)
       end
     end
+
+    factory :list_with_owner do
+      after(:create) do |list|
+        list.users << create_list(:user, 1)
+        list.make_owner!(list.users[0])
+      end
+    end
+
   end
 end

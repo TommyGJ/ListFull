@@ -53,7 +53,8 @@ export const listItemsReducer = (state = [], action) => {
 				...state,
 				itemFormat(newItem)
 			];
-
+		case Types.DELETE_ITEM_SUCCESS:
+			return state.filter(element => element.id !== action.payload)
 		case Types.RESET_VIEW_LIST:
 			return [];
 		default:

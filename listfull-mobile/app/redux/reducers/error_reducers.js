@@ -38,6 +38,14 @@ export const errorReducer = (state = {}, action) => {
 				errMessage: [...action.payload],
 				errHeader:"New Account Error!", 
 			}
+		case Types.DELETE_ITEM_FAILURE:
+			return {
+				...state,
+				err: true,
+				errMessage: [...action.payload],
+				errHeader:"Can't Delete Bullet!", 
+			}
+
 		case Types.POST_ITEM_FAILURE:
 			return {
 				...state,
