@@ -8,14 +8,17 @@
 
 user = User.create!(email: "example@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Doe")
 user2 = User.create!(email: "example2@example.com", password: "password", password_confirmation: "password", first_name: "Jane", last_name: "Doe")
-user3 = User.create!(email: "example3@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Smith")
+user3 = User.create!(email: "example3@example.com", password: "password", password_confirmation: "password", first_name: "Jane", last_name: "Doe")
 user4 = User.create!(email: "tgj98@yahoo.com", password: "password", password_confirmation: "password", first_name: "Tommy", last_name: "Johnson")
-
+user5 = User.create!(email: "example4@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Smith")
+user6 = User.create!(email: "example5@example.com", password: "password", password_confirmation: "password", first_name: "John", last_name: "Smith")
 
 user.activate!
 user2.activate!
 user3.activate!
 user4.activate!
+user5.activate!
+user6.activate!
 
 list1 = List.create(name: 'Groceries', deadline: DateTime.now)
 list2 = List.create(name: 'Christmas Gifts', deadline: DateTime.now)

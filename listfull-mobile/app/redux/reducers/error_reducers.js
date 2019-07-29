@@ -71,12 +71,7 @@ export const errorReducer = (state = {}, action) => {
 				canShowErr: false,
 			}
 		default:
-			return {
-				err: false,
-				errMessage: [],
-				errHeader: '',
-				canShowErr: false,
-			}
+			return state 
 	}
 }
 

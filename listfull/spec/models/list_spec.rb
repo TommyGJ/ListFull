@@ -31,7 +31,7 @@ RSpec.describe List, type: :model do
 
   describe "public instance methods" do
 
-    let!(:list) { create (:list_with_users) }
+    let(:list) { create (:list_with_users) }
     before(:each) do
       @user = list.users.first
     end
@@ -122,6 +122,41 @@ RSpec.describe List, type: :model do
         p new_list
         expect{ new_list.add_multiple_users_on_creation(new_user_owner, @new_users) }.to change{ new_list.users.count }.by(+4) 
       end
+    end
+
+    context "#remove_user!" do
+      let(:other_user) { list.users.last }
+      let(:random_user) { create(:user) }
+
+      context "current_user is owner" do  
+        before(:each) { list.make_owner!(@user) }
+
+        context "user is member of list" do
+          it "removes the user from list memberships" do  
+            expect{ list.remove_user!(@user, other_user) }.to change{ list.list_memberships.where(user_id: other_user).count }.by(-1)
+          end
+
+          it "returns true" do
+            expect(list.remove_user!(@user, other_user)).to be(true)
+          end
+        end
+
+        context "user is not a member of list" do
+          it "returns false" do
+            expect(list.remove_user!(@user, random_user)).to be(false)
+          end
+        end
+      end
+    context "current_user is not owner" do
+      it "returns false" do
+        expect(list.remove_user!(@user, other_user)).to be(false)
+      end
+    end
+
+      
+      
+
+      
     end
     
   end

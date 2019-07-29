@@ -7,7 +7,7 @@ module Api::V1
       if @current_user.canAccessList?(@list) 
         options = {}
         options[:meta] = { total: 1 }
-        options[:include] = [:items]
+        options[:include] = [:items, :users]
         render json: ListSerializer.new(@list, options).serialized_json
       else
         render json: { errors: [ :user => ["does not have permision to access this list" ]]}, status: 403 
@@ -53,6 +53,16 @@ module Api::V1
       end
     rescue ActiveRecord::RecordNotFound
       render json: { errors: [ :list => ["does not exist" ]]}, status: 404 
+    end
+
+    def remove_user
+      @list = List.find(params["id"])
+      user_to_remove = User.find(params[:user][:id])
+      if @list.remove_user!(@current_user, user_to_remove)
+        #TODO
+      else
+        render json: { errors: [ :user => ["could not be removed"]]}, statu: 403
+      end
     end
 
     private 

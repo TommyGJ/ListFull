@@ -12,6 +12,7 @@ Rails.application.routes.draw do
       resources :lists do
         member do
           patch :add_user
+          patch :remove_user
         end
       end
 

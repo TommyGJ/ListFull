@@ -28,11 +28,17 @@ class List < ApplicationRecord
     if self.owner == current_user
       self.destroy
     elsif current_user.canAccessList?(self) 
-      membership = list_memberships.where(user_id: current_user).first
-      membership.destroy
+      destroy_user_membership(current_user)
     else
       return false
     end
+    return true
+  end
+
+  def remove_user!(current_user, user)
+    return false unless self.owner == current_user
+    return false unless user.canAccessList?(self)
+    destroy_user_membership(user)
     return true
   end
 
@@ -43,9 +49,12 @@ class List < ApplicationRecord
     new_users.each { |user| self.users << user }  
   end
 
+  private
 
-
-
+  def destroy_user_membership(user)
+    membership = list_memberships.where(user_id: user).first
+    membership.destroy
+  end
 
 end
 

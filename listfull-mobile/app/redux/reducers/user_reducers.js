@@ -57,7 +57,7 @@ export const userPreviewReducer = (state = [], action) => {
 }
 
 const mapUsers = (users) => {
-	return(user.map(user => ({
+	return(users.map(user => ({
 			id: user.id,
 			firstName: user.firstName,
 			lastName: user.lastName,
@@ -75,6 +75,9 @@ export const listUsersReducer = (state = [], action) => {
 			return [
 				...usersArray,
 			];
+		case Types.REMOVE_USER_SUCCESS:
+			id = action.payload.user.id
+			return state.filter(element => element.id !== id)
 		case Types.RESET_VIEW_LIST: 
 			return [];
 		default: 

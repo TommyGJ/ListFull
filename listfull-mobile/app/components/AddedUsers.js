@@ -8,8 +8,11 @@ const AddedUsers = props => {
 
 	return (props.users.map(user => {
 		return(
-			<UserPreview key = {user.email} user={user} />
+			<View key = {user.email} style = {{flex: 1, borderColor: 'lightgray', marginHorizontal: 5, borderBottomWidth: 1}}>
+				<UserPreview user={user} />
+			</View>
 		);
+			
 	}));
 }
 

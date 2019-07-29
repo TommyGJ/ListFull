@@ -5,6 +5,14 @@ import PropTypes from 'prop-types';
 import GravatarURL from './../utils/GravatarURL.js';
 
 const UserPreview = props => {
+
+	const handleName = () => {
+		full_name = props.user.firstName + ' ' + props.user.lastName; 
+		if (props.owner && props.owner.id === props.user.id) 
+			return "Me"
+		else
+			return full_name;
+	}
 	return(
 		<View style = {UserPreviewStyles.container}>
 			<View style = {UserPreviewStyles.imageBox}>
@@ -19,7 +27,7 @@ const UserPreview = props => {
 			</View>
 			<View style = {UserPreviewStyles.preview}>
 				<Text style = {UserPreviewStyles.largeText}>
-					{props.user.firstName + ' ' + props.user.lastName}
+					{handleName()}
 				</Text>
 			</View>
 			
@@ -29,6 +37,7 @@ const UserPreview = props => {
 
 UserPreview.propTypes = {
 	user: PropTypes.object, 
+	list: PropTypes.object,
 }
 
 const UserPreviewStyles = StyleSheet.create({
@@ -36,11 +45,8 @@ const UserPreviewStyles = StyleSheet.create({
 		flex: 1,
 		paddingTop: 5,
 		paddingBottom: 5,
-		marginRight: 5,
-		marginLeft: 5,
 		flexDirection: 'row',
-		borderBottomWidth: 1,
-		borderColor: 'lightgray',
+		backgroundColor: '#fff',
 	},
 	imageBox: {
 		flex: 2,

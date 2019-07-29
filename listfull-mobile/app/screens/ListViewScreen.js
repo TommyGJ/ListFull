@@ -34,7 +34,7 @@ class ListViewScreen extends React.Component {
 	}
 
 	componentDidMount() {
-		this._getData()
+//		this._getData()
 	}
 	componentWillUnmount() {
 		this.props.resetViewList();

@@ -48,8 +48,11 @@ export const HTTPCreateAccount = (data) => {
 }
 
 export const HTTPDeleteItem = (token, itemID) => {
-	console.log('here');
 	return API.delete('/api/v1/items/' + String(itemID),config(token))
+}
+
+export const HTTPRemoveUserFromList = (token,listID,userData) => {
+	return API.patch('/api/v1/lists/' + String(listID) + '/remove_user/', userData, config(token)) 
 }
 
 
