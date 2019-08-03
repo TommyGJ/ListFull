@@ -10,6 +10,8 @@ const SingleLineTextEntry = props => {
 			placeholder = {props.placeholder} 
 			onChangeText = {props.onChangeValue}
 			autoFocus = {props.focus}
+			keyboardType = {props.keyboardType}
+			secureTextEntry = {props.secureTextEntry}
 		/>
 	);
 }
@@ -30,6 +32,8 @@ SingleLineTextEntry.propTypes = {
 	placeholder: PropTypes.string,
 	onChangeValue: PropTypes.func,
 	focus: PropTypes.bool,
+	keyboardType: PropTypes.string,
+	secureTextEntry: PropTypes.bool,
 }
 
 export default SingleLineTextEntry

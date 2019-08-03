@@ -8,16 +8,19 @@ import {AsyncStorage} from 'react-native';
 import ErrorModal from '../components/ErrorModal.js'
 import { resetErrors } from './../redux/actions/error_actions.js';
 import { createAccount, resetCreationToken } from './../redux/actions/user_actions.js';
+import SingleLineTextEntry from './../components/SingleLineTextEntry.js';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+
 
 
 
 class SignUpScreen extends React.Component {
 	state = {
-		email: 'tommy.johnson@yale.edu',
-		password: 'password',
-		firstName: 'Tommy',
-		lastName: 'Johnson',
-		password_confirmation: 'password',
+		email: '',
+		password: '',
+		firstName: '',
+		lastName: '',
+		password_confirmation: '',
 	};
 
 	static navigationOptions = {
@@ -60,72 +63,72 @@ class SignUpScreen extends React.Component {
 
 	render() {
 		return (
-			<KeyboardAvoidingView behavior = "padding" style={styles.container}>
-				<View style = {styles.topContainer}>
-					<ErrorModal 
-						err={this.props.err}
-						close={this._closeError}
-						canShowErr={true}
-						headerMessage={this.props.errHeader}
-						errMessage = {this.props.errMessage}
-					/>
-					<TextInput 
-						style = {styles.text_box}
-						value = {this.state.email}
-						onChangeText = {email => {	
-							this.setState({email: email.toLowerCase()});
-						}}
-						placeholder = "Email"
-						keyboardType = 'email-address'
-					/>  
-					<TextInput 
-						style = {styles.text_box}
-						value = {this.state.firstName}
-						onChangeText = {(firstName) => {
-							this.setState({firstName: firstName});
-						}}
-						placeholder = "First Name"
-					/>  
-					<TextInput 
-						style = {styles.text_box}
-						value = {this.state.lastName}
-						onChangeText = {(lastName) => {
-							this.setState({lastName: lastName});
-						}}
-						placeholder = "Last Name"
-					/>  
+			<View style={styles.container}>
+				<KeyboardAwareScrollView
+					extraScrollHeight = {50}
+				>
+					<View style = {styles.topContainer}>
+						<ErrorModal 
+							err={this.props.err}
+							close={this._closeError}
+							canShowErr={true}
+							headerMessage={this.props.errHeader}
+							errMessage = {this.props.errMessage}
+						/>
+						<SingleLineTextEntry 
+							value = {this.state.email}
+							onChangeValue = {email => {	
+								this.setState({email: email.toLowerCase()});
+							}}
+							placeholder = "Email"
+							keyboardType = 'email-address'
+							focus = {true}
+						/>  
+						<SingleLineTextEntry 
+							value = {this.state.firstName}
+							onChangeValue = {(firstName) => {
+								this.setState({firstName: firstName});
+							}}
+							placeholder = "First Name"
+						/>  
+						<SingleLineTextEntry 
+							value = {this.state.lastName}
+							onChangeValue = {(lastName) => {
+								this.setState({lastName: lastName});
+							}}
+							placeholder = "Last Name"
+						/>  
 
-				</View>
-				<View style = {styles.bottomContainer}>
-					<TextInput 
-						style = {styles.text_box}
-						value = {this.state.password}
-						onChangeText = {password => {
-							this.setState({password: password});
-						}}
-						placeholder = "Password"
-						secureTextEntry = {true}
-					/>  
-					<TextInput 
-						style = {styles.text_box}
-						value = {this.state.password_confirmation}
-						onChangeText = {password_confirmation => {
-							this.setState({password_confirmation: password_confirmation});
-						}}
-						placeholder = "Password Confirmation"
-						secureTextEntry = {true}
-					/>  
-					<Button
-						onPress={() => { 
-								Keyboard.dismiss();
-								this._createAccount();
+					</View>
+					<View style = {styles.bottomContainer}>
+						<SingleLineTextEntry 
+							value = {this.state.password}
+							onChangeValue = {password => {
+								this.setState({password: password});
+							}}
+							placeholder = "Password"
+							secureTextEntry = {true}
+						/>  
+						<SingleLineTextEntry 
+							value = {this.state.password_confirmation}
+							onChangeValue = {password_confirmation => {
+								this.setState({password_confirmation: password_confirmation});
+							}}
+							placeholder = "Password Confirmation"
+							secureTextEntry = {true}
+						/>  
+						<Button
+							onPress={() => { 
+									Keyboard.dismiss();
+									this._createAccount();
+								}
 							}
-						}
-						title="Create Account"
-						disabled = {this._handleButton()}
-					/>
-				</View>
-			</KeyboardAvoidingView>
+							title="Create Account"
+							disabled = {this._handleButton()}
+						/>
+					</View>
+				</KeyboardAwareScrollView>
+			</View>
 
 		);
 	}
@@ -135,7 +138,6 @@ const styles = StyleSheet.create({
 	  container: {
 			backgroundColor: '#fff',
 			flex: 2, 
-			paddingTop: Constants.statusBarHeight,
 		},
 	  topContainer: {
 			flex: 1,
@@ -144,14 +146,6 @@ const styles = StyleSheet.create({
 	  bottomContainer: {
 			flex: 1,
 			justifyContent: 'flex-start',
-		},
-	  text_box: {
-			borderWidth: 2,
-			borderRadius: 3,
-			height: 40,
-			borderColor: 'black',
-			margin: 5,
-			paddingLeft: 15,
 		},
 		error: {
 			alignItems: 'center',

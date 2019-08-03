@@ -5,6 +5,7 @@ import  Constants  from 'expo-constants';
 import API from './../utils/API.js';
 import * as SecureStore from 'expo-secure-store';
 import ErrorModal from '../components/ErrorModal.js';
+import SingleLineTextEntry from '../components/SingleLineTextEntry.js';
 
 import { logInUser } from './../redux/actions/user_actions.js'; 
 import { resetErrors } from './../redux/actions/error_actions.js'; 
@@ -65,20 +66,18 @@ class LoginScreen extends React.Component {
 						headerMessage={"Login Error!"}
 						errMessage = {this.props.errMessage}
 					/>
-					<TextInput 
-						style = {styles.text_box}
+					<SingleLineTextEntry
 						value = {this.state.email}
-						onChangeText = {this._handleEmail}
 						placeholder = "Email"
+						onChangeValue = {this._handleEmail}
 						keyboardType = 'email-address'
-					/>  
-					<TextInput 
-						style = {styles.text_box}
+					/>
+					<SingleLineTextEntry
 						value = {this.state.password}
-						onChangeText = {this._handlePassword}
+						onChangeValue = {this._handlePassword}
 						placeholder = "Password"
 						secureTextEntry = {true}
-					/>  
+					/>
 				</View>
 				<View style = {styles.bottomContainer}>
 					<Button
@@ -126,14 +125,6 @@ const styles = StyleSheet.create({
 			flexDirection: 'row',
 			alignItems: 'baseline',
 			justifyContent: 'center',
-		},
-	  text_box: {
-			borderWidth: 2,
-			borderRadius: 3,
-			height: 40,
-			borderColor: 'black',
-			margin: 5,
-			paddingLeft: 15,
 		},
 		error: {
 			alignItems: 'center',
