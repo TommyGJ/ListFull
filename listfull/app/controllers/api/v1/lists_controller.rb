@@ -65,10 +65,29 @@ module Api::V1
       end
     end
 
+    def update
+      @list = List.find(params["id"])
+      if @current_user.ownsList?(@list) and @list.update(list_params)
+        render_list
+      elsif !@current_user.ownsList?(@list) 
+        render json: { errors: [ "list" => ["can only be updated by its owner" ]]}, status: 403 
+      else
+        render json: { errors: [@list.errors.messages] }, status: 422 
+      end
+    rescue ActiveRecord::RecordNotFound
+      render json: { errors: [ "list" => ["does not exist" ]]}, status: 404 
+    end
     private 
 
     def list_params
       params.require(:list).permit(:name, :deadline, :info, :users => [])
+    end
+
+    def render_list
+      options = {}
+      options[:meta] = { total: 1 }
+      options[:include] = [:items, :users]
+      render json: ListSerializer.new(@list, options).serialized_json
     end
 
   end

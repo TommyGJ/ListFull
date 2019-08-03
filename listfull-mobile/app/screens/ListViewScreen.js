@@ -18,14 +18,7 @@ class ListViewScreen extends React.Component {
 
 	static navigationOptions = ({ navigation }) => {
 		return {
-			title: navigation.getParam('list').name,  
-			headerRight:  (
-				<Button
-					onPress={() => alert('This is a button!')}
-					title="Info"
-					color="#fff"
-				/>
-			)
+			title: navigation.getParam('list'),  
 		};
 	};
 
@@ -34,8 +27,18 @@ class ListViewScreen extends React.Component {
 	}
 
 	componentDidMount() {
-//		this._getData()
+		this._updateTitle()
 	}
+
+	componentDidUpdate() {
+		if (this.props.navigation.getParam('list') != this.props.list.name) {
+			this._updateTitle()
+		}
+	}
+	_updateTitle = () => {
+		this.props.navigation.setParams({list: this.props.list.name})
+	}
+
 	componentWillUnmount() {
 		this.props.resetViewList();
 	}

@@ -37,7 +37,7 @@ const AddUserForm = props => {
 			</View>
 			<View style = {formStyles.buttonContainer}>
 				<TouchableOpacity onPress = {submit}  >
-					<MaterialIcons name={ `add-circle${canSubmit() ? '' : '-outline'}` } size={50} color="lightsteelblue"/>
+					<MaterialIcons name={ `add-circle${canSubmit() ? '' : '-outline'}` } size={50} color="dodgerblue"/>
 				</TouchableOpacity>
 			</View>
 		</View>

@@ -1,4 +1,4 @@
-import { postNewList, HTTPDeleteList, HTTPPatchList, HTTPGetListItems, HTTPRemoveUserFromList } from './../../utils/API.js';
+import { postNewList, HTTPDeleteList, HTTPPatchList, HTTPGetListItems, HTTPRemoveUserFromList, HTTPUpdateList } from './../../utils/API.js';
 import * as Types from './../constants/types.js';
 import normalize from 'json-api-normalizer';
 import build from 'redux-object';
@@ -43,6 +43,17 @@ export const removeUserFromList = (token, listID, userData) => async dispatch =>
 		dispatch({type: Types.REMOVE_USER_FAILURE, payload: error.response.data.errors});
 	}
 
+}
+
+export const updateList = (token, listID, listData) => async dispatch => {
+	dispatch({type: Types.UPDATE_LIST_STARTED});
+	try {
+		const {data} = await HTTPUpdateList(token, listID, listData);
+		state = normalize(data)
+		dispatch({type: Types.UPDATE_LIST_SUCCESS, payload: state}); 
+	} catch(error) {
+		dispatch({type: Types.UPDATE_LIST_FAILURE, payload: error.response.data.errors});
+	}
 }
 
 export const viewList = (token, listID) => async dispatch => {

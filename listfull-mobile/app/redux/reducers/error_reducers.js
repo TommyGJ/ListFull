@@ -53,6 +53,13 @@ export const errorReducer = (state = {}, action) => {
 				errMessage: [...action.payload],
 				errHeader:"Can't Add Bullet!", 
 			}
+		case Types.UPDATE_LIST_FAILURE:
+			return {
+				...state,
+				err: true,
+				errMessage: [...action.payload],
+				errHeader:"Can't Update List!", 
+			}
 		case Types.RESET_ERRORS: 
 			return {
 				...state,

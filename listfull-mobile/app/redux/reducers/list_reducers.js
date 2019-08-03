@@ -9,6 +9,15 @@ const mapLists = (lists) => {
 	}));
 }
 
+const update = (lists, newList) => {
+	return(lists.map(element => {
+		if (element.id == newList.id) {
+			return listObj(newList)
+		}
+		return {...element} 
+	}));
+}
+
 const listObj = (list) => ({
 		id: list.id,
 		name: list.name,
@@ -35,6 +44,11 @@ export const userListsReducer = (state = [], action) => {
 				listObj(list),
 				...state
 			];
+		case Types.UPDATE_LIST_SUCCESS:
+			const updatedList = build(action.payload, 'list', null)[0];
+			return [
+				...update(state, updatedList)
+			];
 		case Types.DELETE_LIST_SUCCESS:
 			return state.filter(element => element.id !== action.payload)
 		default:
@@ -47,12 +61,12 @@ export const viewListReducer = (state = {}, action) => {
 		case Types.VIEW_LIST_SUCCESS: 
 			const list = build(action.payload, 'list', null)[0] 
 			return {
-				id: list.id,
-				name: list.name,
-				deadline: list.deadline,
-				info: list.info,
-				ownerID: list.ownerId,
-				ownerName: list.ownerName,
+				...listObj(list)
+			}
+		case Types.UPDATE_LIST_SUCCESS:
+			const updatedList = build(action.payload, 'list', null)[0]
+			return {
+				...listObj(updatedList)
 			}
 		case Types.RESET_VIEW_LIST:
 			return {};

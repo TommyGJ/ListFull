@@ -37,7 +37,7 @@ class DashBoardScreen extends React.Component {
 		console.log(listData);
 		this.props.viewList(this.props.token, listData.id);
 		this.props.navigation.navigate('ListView',{
-			list: listData,
+			list: listData.name,
 		});
 	}
 

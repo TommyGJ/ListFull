@@ -55,6 +55,11 @@ export const HTTPRemoveUserFromList = (token,listID,userData) => {
 	return API.patch('/api/v1/lists/' + String(listID) + '/remove_user/', userData, config(token)) 
 }
 
+export const HTTPUpdateList = (token, listID, listData) => {
+	return API.patch('/api/v1/lists/' + String(listID), listData, config(token))
+}
+
+
 
 /*
  * Helper Functions

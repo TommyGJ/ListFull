@@ -8,12 +8,12 @@ const FormHeader = props => {
 		<View style = {headerStyles.container}>
 			<View style = {{flex: 1, flexDirection: 'row'}}>
 				<View style = {{flex: 1, alignItems: 'flex-start'}}>
-					<TouchableOpacity >
+					<TouchableOpacity onPress = {props.close} >
 						<MaterialCommunityIcons name="window-close" size={32} color="gray"/>
 					</TouchableOpacity>
 				</View>
 				<View style = {{flex: 1, alignItems: 'flex-end'}}>
-					<TouchableOpacity >
+					<TouchableOpacity onPress = {props.submit} >
 						<MaterialIcons name="add" size={35} color="dodgerblue"/>
 					</TouchableOpacity>
 				</View>
@@ -29,7 +29,9 @@ const FormHeader = props => {
 }
 
 FormHeader.propTypes = {
-	text: PropTypes.string
+	text: PropTypes.string,
+	close: PropTypes.func,
+	submit: PropTypes.func,
 
 }
 
