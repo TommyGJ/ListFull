@@ -45,7 +45,6 @@ export const errorReducer = (state = {}, action) => {
 				errMessage: [...action.payload],
 				errHeader:"Can't Delete Bullet!", 
 			}
-
 		case Types.POST_ITEM_FAILURE:
 			return {
 				...state,
@@ -59,6 +58,13 @@ export const errorReducer = (state = {}, action) => {
 				err: true,
 				errMessage: [...action.payload],
 				errHeader:"Can't Update List!", 
+			}
+		case Types.UPDATE_ACCOUNT_FAILURE:
+			return {
+				...state,
+				err: true,
+				errMessage: [...action.payload],
+				errHeader:"Can't Update Account!", 
 			}
 		case Types.RESET_ERRORS: 
 			return {

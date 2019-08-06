@@ -49,4 +49,15 @@ class User < ApplicationRecord
   def owned_lists
     list_memberships.ownerships.map(&:list)
   end
+
+  def update_secure(params, old_password)
+    if self.valid_password?(old_password)
+      return update(params)
+    else
+      errors.add(:password, "(Old Password) is not correct")
+      return false
+    end
+
+  end
+
 end

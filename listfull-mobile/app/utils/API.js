@@ -59,6 +59,10 @@ export const HTTPUpdateList = (token, listID, listData) => {
 	return API.patch('/api/v1/lists/' + String(listID), listData, config(token))
 }
 
+export const HTTPUpdateAccount = (token, userID, userData, url) => {
+	return API.patch('/api/v1/users/' + String(userID) + url, userData, config(token))
+}
+
 
 
 /*

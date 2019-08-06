@@ -27,6 +27,15 @@ export const userReducer = (state = initialUserState, action) => {
 				...state,
 				creation_token: "Account Created Successfully",
 			}
+		case Types.UPDATE_ACCOUNT_SUCCESS:
+			const updatedUser = build(action.payload, 'user')[0];
+			return {
+				...state,
+				email: updatedUser.email,
+				firstName: updatedUser.firstName, 
+				lastName: updatedUser.lastName,
+				id: updatedUser.id,
+			}
 		case Types.RESET_CREATION_TOKEN:
 			return {
 				...state,

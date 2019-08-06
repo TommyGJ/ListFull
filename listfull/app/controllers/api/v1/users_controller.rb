@@ -29,10 +29,35 @@ module Api::V1
       end
     end
 
+#    @user.valid_password?('secret') # Compares 'secret' with the actual user's password, returns true if they match
+    def update
+      if @current_user.update(update_user_params)
+        render json: UserSerializer.new(@current_user).serialized_json
+      else
+        render json: { errors: [@current_user.errors.messages] }, status: 422
+      end
+    end
+
+    def update_secure
+      if @current_user.update_secure(update_secure_user_params, params["old_password"])
+        render json: UserSerializer.new(@current_user).serialized_json
+      else
+        render json: { errors: [@current_user.errors.messages] }, status: 422
+      end
+    end
+
     private
 
     def user_params
       params.require(:user).permit(:email, :password, :password_confirmation, :first_name, :last_name)
+    end
+    def update_user_params
+      params.require(:user).permit(:first_name, :last_name)
+    end
+    def update_secure_user_params
+      params.require(:user).permit(:email, :password, :password_confirmation)
+
+
     end
   end
 end

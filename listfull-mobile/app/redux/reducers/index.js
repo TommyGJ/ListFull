@@ -3,8 +3,9 @@ import { userReducer, userPreviewReducer, listUsersReducer } from './user_reduce
 import { errorReducer } from './error_reducers.js'
 import { userListsReducer, viewListReducer } from './list_reducers.js'
 import { listItemsReducer, toggleItemReducer } from './item_reducers.js';
+import * as Types from '../constants/types.js'; 
 
-const rootReducer = combineReducers({
+const appReducer = combineReducers({
 	user: userReducer,
 	userPreviews: userPreviewReducer,
 	errors: errorReducer,
@@ -14,6 +15,13 @@ const rootReducer = combineReducers({
 	listUsers: listUsersReducer,
 	toggledItem: toggleItemReducer,
 });
+
+const rootReducer = ( state, action ) => {
+	if ( action.type === Types.LOG_OUT ) {
+				state = undefined;
+	}
+	return appReducer(state, action)
+}
 
 export default rootReducer;
 
