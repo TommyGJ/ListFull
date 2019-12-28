@@ -1,7 +1,7 @@
 import axios from 'axios'
 
 export default API = axios.create({
-	baseURL: 'http://62a58ebb.ngrok.io'  
+	baseURL: 'http://3959b3a9.ngrok.io'  
 });
 
 export const login = (email, password) => {
