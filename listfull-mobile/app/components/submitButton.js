@@ -1,38 +1,73 @@
 import React from 'react';
-import { Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity,ScrollView, KeyboardAvoidingView} from 'react-native';
 import PropTypes from 'prop-types';
+import { Ionicons, MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons';
 
-const MyButton = props => {
-	return (
-		<TouchableOpacity style = {buttonStyles.container}>
-			<Text style = {buttonStyles.textStyle} >
-				{props.text}
-			</Text>
-		</TouchableOpacity>
+const SubmitButton = props => {
+
+	const disabledBttn = () => {
+		return (
+			<TouchableOpacity style = {buttonStyles.disabledButton}>
+				<Text style = {buttonStyles.text}>
+					{props.name}
+				</Text>
+			</TouchableOpacity>
+		);
+	}
+
+	const enabledBttn = () => {
+		return (
+			<TouchableOpacity onPress = {() => props.onSubmit()} style = {buttonStyles.enabledButton}>
+				<Text style = {buttonStyles.text}>
+					{props.name}
+				</Text>
+			</TouchableOpacity>
+		);
+	}
+
+	return ( 
+		<View style = {buttonStyles.container}>
+			{props.enabled && enabledBttn()}
+			{!props.enabled && disabledBttn()}
+		</View>
 	);
 }
 
-MyButton.propTypes = {
-	text: PropTypes.string,
-	submit: PropTypes.func,
+SubmitButton.propTypes = {
+	name: PropTypes.string,
+	enabled: PropTypes.bool,
+	onSubmit: PropTypes.func,
 }
 
 const buttonStyles = StyleSheet.create({
 	container: {
-		paddingHorizontal: 15,
-		paddingTop: 5,
-		paddingBottom: 5,
-		backgroundColor: 'dodgerblue',
+		flex: 1,
 		justifyContent: 'center',
 		alignItems: 'center',
 	},
-	textStyle: {
-		color: 'white',
-		fontSize: 20,
+	disabledButton: {
+		paddingVertical: 10,
+		paddingHorizontal: 15,
+		justifyContent: 'center',
+		backgroundColor: 'dodgerblue',
+		borderRadius: 5,
+		opacity: 0.25,
+	},
+	enabledButton: {
+		paddingVertical: 10,
+		paddingHorizontal: 15,
+		justifyContent: 'center',
+		backgroundColor: 'dodgerblue',
+		borderRadius: 5,
+	},
+
+	text: {
+		color: "white",
+		fontSize: 22,
 		fontWeight: 'bold',
-	}
+	},
 });
 
-export default MyButton;
+export default SubmitButton;
 
 
