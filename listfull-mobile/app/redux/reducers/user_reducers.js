@@ -4,6 +4,7 @@ import build from 'redux-object';
 
 const initialUserState = {
 	token: '',
+	refresh_token: '',
 };
 
 export const userReducer = (state = initialUserState, action) => {
@@ -12,6 +13,7 @@ export const userReducer = (state = initialUserState, action) => {
 			return {
 				...state,
 				token: action.payload.token,
+				refresh_token: action.payload.refresh_token,
 			};
 		case Types.USER_UPDATE_SUCCESS:
 			const user = build(action.payload, 'user')[0];

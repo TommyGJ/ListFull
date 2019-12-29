@@ -3,6 +3,7 @@ class User < ApplicationRecord
   has_many :items
   has_many :list_memberships
   has_many :lists, :through => :list_memberships
+  attr_encrypted :refresh_token, key: Rails.application.credentials.key
 
   validates :password, length: { minimum: 3 }, if: -> { new_record? || changes[:crypted_password] }
   validates :password, confirmation: true, if: -> { new_record? || changes[:crypted_password] }

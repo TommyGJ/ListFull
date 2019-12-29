@@ -10,15 +10,17 @@ module Api::V1
     end
 
     def authenticate_token!
-      payload = JsonWebToken.decode(auth_token)
-      if payload.present?
+      begin
+        payload = AccessToken.decode(auth_token)
         @current_user = User.find(payload['sub'])
-      else
+      rescue JWT::ExpiredSignature
+        print "expired_signature"
+        render json: {errors: ["Expired Token"]}, status: :unauthorized
+      rescue JWT::DecodeError
+        print "decode_error"
         render json: {errors: ["Invalid Token Authorization"]}, status: :unauthorized
       end
-    rescue JWT::DecodeError
-#    rescue JWT::ExpiredSignature
-      render json: {errors: ["Invalid Token Authorization"]}, status: :unauthorized
+
     end
 
     def auth_token

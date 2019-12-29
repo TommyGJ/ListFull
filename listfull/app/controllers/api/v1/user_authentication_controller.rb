@@ -4,7 +4,7 @@ module Api::V1
     def authenticate
       login(params[:auth][:email], params[:auth][:password]) do |user, failure|
         if user && !failure
-          render json: { token: JsonWebToken.encode(sub: user.id, email: user.email) }, status: :ok
+          render json: { token: AccessToken.encode(sub: user.id, email: user.email), refresh_token: RefreshToken.encode(sub: user.id, email: user.email) }, status: :ok
         else
           case failure
           when :invalid_login
