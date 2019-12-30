@@ -5,6 +5,15 @@ export default API = axios.create({
 	baseURL: 'http://f6ef94aa.ngrok.i'  
 });
 
+export const needRefresh = (token, refreshToken, requestFunction) => {
+	const decoded = jwt_decode(token);
+	const time = Date.now() / 1000;
+	// I subtract a minute from the expiration to 
+	if ( (decoded["exp"] - 60) >= time ) {
+		requestFunction(refreshToken);
+	}
+}
+
 export const login = (email, password) => {
 	return API.post('/api/v1/authenticate', {
 			auth: { email: email, password: password }

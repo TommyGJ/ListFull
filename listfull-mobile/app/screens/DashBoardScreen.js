@@ -4,9 +4,6 @@ import { updateUser, getUserPreview, resetUserPreviews } from './../redux/action
 import { addNewList, deleteList, patchNewUser, viewList } from './../redux/actions/list_actions.js';
 import { resetErrors, enableShowErrors, disableShowErrors } from './../redux/actions/error_actions.js';
 import { View, Text, StyleSheet, ScrollView } from 'react-native';
-import { decode_jwt } from '../utils/Decode.js';
-import API from './../utils/API.js';
-import axios from 'axios';
 import TouchableList  from './../components/TouchableList.js';
 import AddList from './../components/AddList.js';
 import AddListForm from './../components/AddListForm.js';
@@ -14,6 +11,8 @@ import Modal from 'react-native-modal';
 import ErrorModal from './../components/ErrorModal.js';
 import AddUserModal from './../components/AddUserModal.js';
 import InfoModal from './../components/InfoModal.js';
+import { needRefresh } from './../utils/API.js';
+import { getNewAccessToken } from './../redux/actions/user_actions.js';
 
 class DashBoardScreen extends React.Component {
 	state = {
@@ -34,7 +33,7 @@ class DashBoardScreen extends React.Component {
 
 	//Go to list screen
 	_onPress = (listData) => {
-		console.log(listData);
+		needRefresh(this.props.token, this.props.refresh_token, this.props.getNewAccessToken);	
 		this.props.viewList(this.props.token, listData.id);
 		this.props.navigation.navigate('ListView',{
 			list: listData.name,
@@ -42,27 +41,32 @@ class DashBoardScreen extends React.Component {
 	}
 
 	_getUserInfo = () => {
+		needRefresh(this.props.token, this.props.refresh_token, this.props.getNewAccessToken);
 		this.props.updateUser(this.props.token);
 	}
 
 	_postNewList = (name, info, deadline) => {
+		needRefresh(this.props.token, this.props.refresh_token, this.props.getNewAccessToken);
 		const userEmails = this.props.userPreviews.map(user => user.email)
 		const listData = { list: { name: name, deadline: deadline.getTime(), info: info, users: userEmails }};
 		this.props.addNewList(this.props.token, listData);
 	}
 
 	_deleteList = (list) => {
+		needRefresh(this.props.token, this.props.refresh_token, this.props.getNewAccessToken);
 		const listID = list.id;
 		this.props.deleteList(this.props.token, listID);
 	}
 
 	_patchNewUser = (email) => {
+		needRefresh(this.props.token, this.props.refresh_token, this.props.getNewAccessToken);
 		const listID = this.state.toggledList.id; 
 		const userData = { user: {email: email } }; 
 		this.props.patchNewUser(this.props.token, listID, userData);
 	}
 
 	_getUserPreview = (email) => {
+		needRefresh(this.props.token, this.props.refresh_token, this.props.getNewAccessToken);
 		this.props.getUserPreview(this.props.token, email);
 	}
 
@@ -205,6 +209,7 @@ class DashBoardScreen extends React.Component {
 const mapStateToProps = state => ({
 	user: state.user,
 	token: state.user.token,
+	refresh_token: state.user.refresh_token,
 	lists: state.lists,
 	errors: state.errors,
 	userPreviews: state.userPreviews,
@@ -220,6 +225,7 @@ const actionCreators = {
 	getUserPreview,
 	resetUserPreviews,
 	viewList,
+	getNewAccessToken,
 }
 
 export default connect(mapStateToProps,actionCreators)(DashBoardScreen);
