@@ -1,4 +1,4 @@
-import { login, getUser, HTTPGetUserPreview, HTTPCreateAccount, HTTPUpdateAccount } from './../../utils/API.js';
+import { login, getUser, HTTPGetUserPreview, HTTPCreateAccount, HTTPUpdateAccount, getNewAccessToken } from './../../utils/API.js';
 import * as Types from './../constants/types.js';
 import normalize from 'json-api-normalizer';
 import build from 'redux-object';
@@ -20,7 +20,7 @@ export const updateUser = (token) => async dispatch => {
 		const state = normalize(data);
 		dispatch({ type: Types.USER_UPDATE_SUCCESS, payload: state });
 	} catch(error) {
-		console.log(error);
+//		console.log(error);
 		dispatch({ type: Types.USER_UPDATE_FAILURE, payload: error.response.data.errors});
 	}
 }
@@ -69,4 +69,14 @@ export const logOut = () => ({
 export const resetCreationToken = () => ({
 	type: Types.RESET_CREATION_TOKEN,
 });
+
+export const getNewAccessToken = (refreshToken) => async dispath => {
+	dispatch({type: Types.NEW_ACCESS_TOKEN_STARTED});
+	try {
+		const response = await getNewAccessToken(refreshToken); 
+		dispatch({ type: Types.NEW_ACCESS_TOKEN_SUCCESS, payload: response.data });
+	} catch(error) {
+		dispatchEvent({ type: Types.LOG_OUT })
+	}
+}
 

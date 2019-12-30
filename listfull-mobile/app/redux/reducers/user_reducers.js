@@ -15,6 +15,12 @@ export const userReducer = (state = initialUserState, action) => {
 				token: action.payload.token,
 				refresh_token: action.payload.refresh_token,
 			};
+        case Types.NEW_ACCESS_TOKEN_SUCCESS:
+			return {
+				...state,
+				token: action.payload.token,
+				refresh_token: action.payload.refresh_token,
+			};
 		case Types.USER_UPDATE_SUCCESS:
 			const user = build(action.payload, 'user')[0];
 			return {

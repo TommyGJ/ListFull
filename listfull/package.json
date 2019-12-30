@@ -1,5 +1,7 @@
 {
   "name": "listfull",
   "private": true,
-  "dependencies": {}
+  "dependencies": {
+    "jwt-decode": "^2.2.0"
+  }
 }

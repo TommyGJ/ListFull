@@ -1,13 +1,18 @@
 import axios from 'axios'
+import jwt_decode from 'jwt-decode';
 
 export default API = axios.create({
-	baseURL: 'http://3959b3a9.ngrok.io'  
+	baseURL: 'http://f6ef94aa.ngrok.i'  
 });
 
 export const login = (email, password) => {
 	return API.post('/api/v1/authenticate', {
 			auth: { email: email, password: password }
 	});
+}
+
+export const getNewAccessToken = (refreshToken) => {
+	return API.post('/api/v1/new_token', config(refreshToken))
 }
 
 export const getUser = (token) => {
